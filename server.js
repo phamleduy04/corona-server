@@ -20,49 +20,28 @@ const query = `query countries {
         Last_Update
     }
 }`;
-const test_json = {
- "messages": [
-    {
-      "attachment":{
-        "type":"template",
-        "payload":{
-          "template_type":"generic",
-          "image_aspect_ratio": "square",
-          "elements":[
+const test_json =     {
+  "attachment":{
+    "type":"template",
+    "payload":{
+      "template_type":"generic",
+      "image_aspect_ratio": "square",
+      "elements":[
+        {
+          "title":"Chatfuel Rockets Jersey",
+          "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
+          "subtitle":"Size: M",
+          "buttons":[
             {
-              "title":"Chatfuel Rockets Jersey",
-              "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
-              "subtitle":"Size: M",
-              "buttons":[
-                {
-                  "type":"web_url",
-                  "url":"https://rockets.chatfuel.com/store",
-                  "title":"View Item"
-                }
-              ]
-            },
-            {
-              "title":"Chatfuel Rockets Jersey",
-              "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
-              "subtitle":"Size: L",
-              "default_action": {
-                "type": "web_url",
-                "url": "https://rockets.chatfuel.com/store",
-                "messenger_extensions": true
-              },
-              "buttons":[
-                {
-                  "type":"web_url",
-                  "url":"https://rockets.chatfuel.com/store",
-                  "title":"View Item"
-                }
-              ]
+              "type":"web_url",
+              "url":"https://rockets.chatfuel.com/store",
+              "title":"View Item"
             }
           ]
         }
-      }
+      ]
     }
-  ]
+  }
 }
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
