@@ -20,6 +20,15 @@ const query = `query countries {
         Last_Update
     }
 }`;
+const news_query = `query topTrueNews {
+    topTrueNews {
+        title
+        url
+        siteName
+        picture
+        }
+}`
+var news_json = require('./news.json')
 const test_json = require('./test.json')
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
@@ -36,6 +45,7 @@ const graphqlclient = new graphql.GraphQLClient(url, {
         AcceptLanguage: "vn-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5"
     },
 })
+
 var app = express();
 app.use(bodyParser.urlencoded({
   extended: false
@@ -120,6 +130,28 @@ app.get('/korea', (req, res) => {
 
 app.get('/corona', (req, res) => {
     res.send(test_json)
+})
+
+app.get('/news', (req, res) => {
+    graphqlclient.request(news_query).then(result => {
+        result.topTrueNews.forEach(n => {
+            news_json.messages[0].attachment.payload.elements.push({
+                "title": n.title,
+                "image_url": n.picture,
+                "subtitle": `Nguồn: ${n.siteName}`,
+                "buttons": [
+                    {
+                        "type": "web_url",
+                        "url": n.url,
+                        "title": "Đọc báo"
+                    }
+                ]
+            })
+        })
+        res.send(news_json)
+        
+    })
+    
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
