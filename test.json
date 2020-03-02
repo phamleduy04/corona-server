@@ -1,39 +1,135 @@
 {
-    "messages": [
-        {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "image_aspect_ratio": "square",
-                    "elements": [
-                        {
-                            "title": "Chatfuel Rockets Jersey",
-                            "image_url": "https://www.gstatic.com/webp/gallery/1.sm.jpg",
-                            "subtitle": "Size: M",
-                            "buttons": [
-                                {
-                                    "type": "web_url",
-                                    "url": "https://developers.google.com/speed/webp/gallery1",
-                                    "title": "View Item"
-                                }
-                            ]
-                        },
-                        {
-                            "title": "Chatfuel Rockets Jersey",
-                            "image_url": "https://www.gstatic.com/webp/gallery/2.sm.jpg",
-                            "subtitle": "Size: L",
-                            "buttons": [
-                                {
-                                    "type": "web_url",
-                                    "url": "https://developers.google.com/speed/webp/gallery1",
-                                    "title": "View Item"
-                                }
-                            ]
-                        }
-                    ]
+  "messages": [
+    {
+      "attachment": {
+        "type": "template",
+        "payload": {
+          "template_type": "generic",
+          "image_aspect_ratio": "square",
+          "elements": [
+            {
+              "title": "Ngân sách 'bay' 150 tỷ đồng thuế xuất nhập khẩu mỗi ngày vì dịch Covid -19",
+              "image_url": "https://cafefcdn.com/zoom/600_375/2020/photo1583156250054-1583156250403-crop-15831562636661304745499.jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://cafef.vn/ngan-sach-bay-150-ty-dong-thue-xuat-nhap-khau-moi-ngay-vi-dich-covid-19-20200302203810098.chn",
+                  "title": "Đọc báo"
                 }
+              ]
+            },
+            {
+              "title": "Thủ tướng: Không ngồi chờ, không có cơ chế xin cho trong phòng chống COVID-19",
+              "image_url": "https://cafefcdn.com/zoom/600_315/2020/3/2/nqh03727-1583156584209362070093-crop-15831566076601355673530.JPG",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "https://vntintuc.net/tin-tuc-kinh-te/thu-tuong-khong-ngoi-cho-khong-co-co-che-xin-cho-trong-phong-chong-covid-19-637187837790809683",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Thủ tướng: Không ngồi chờ, không có cơ chế xin cho trong phòng chống COVID-19",
+              "image_url": "https://cafefcdn.com/zoom/600_315/2020/3/2/nqh03727-1583156584209362070093-crop-15831566076601355673530.JPG",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://cafef.vn/thu-tuong-khong-ngoi-cho-khong-co-co-che-xin-cho-trong-phong-chong-covid-19-20200302204333004.chn",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Hành khách yên tâm đến khu cách ly khi đáp xuống sân bay Cần Thơ",
+              "image_url": "https://media.tinmoi24.vn/2020/3/2/22/131eedf8703e4c37c4e856b45f84ab6b.JPG",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "https://tinmoi24.vn/hanh-khach-yen-tam-den-khu-cach-ly-khi-dap-xuong-san-bay-can-tho/news-60-2-7dbf756e6c911d75489cdb0aa5b3bb37",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Đã có kết quả xét nghiệm COVID-19 đối với 2 cháu bé song sinh quê Hải Dương",
+              "image_url": "https://media.tinmoi24.vn/2020/3/2/21/4b88e38929f230d92ec82d4d3b1408fc.jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "https://tinmoi24.vn/da-co-ket-qua-xet-nghiem-covid-19-doi-voi-2-chau-be-song-sinh-que-hai-duong/news-72-11-b34dee5f0ca0218136605aa4b528d460",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Phú Yên: Lên kế hoạch để bậc học từ Mầm non đến THCS trở lại trường vào 8/3",
+              "image_url": "https://i.a4vn.com/2020/3/2/phu-yen-len-ke-hoach-de-bac-hoc-tu-mam-non-den-thcs-tro-lai-truong-vao-83-a5418-4722967_default.jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://www.vietgiaitri.com/phu-yen-len-ke-hoach-de-bac-hoc-tu-mam-non-den-thcs-tro-lai-truong-vao-83-20200302i4722967",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Từ vùng dịch về nước, giở mọi \"mánh khóe\" để trốn cách ly: Chính các bạn làm khổ bao người",
+              "image_url": "https://afamilycdn.com/thumb_w/600/150157425591193600/2020/3/2/avatar1583146407432-15831464081002031363675-0-0-314-600-crop-15831464392691077358264.jpeg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://afamily.vn/tu-vung-dich-ve-nuoc-gio-moi-manh-khoe-de-tron-cach-ly-chinh-cac-ban-lam-kho-bao-nguoi-20200302175629759.chn",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Dự kiến 0h ngày 4/3 dỡ bỏ phong tỏa xã Sơn Lôi, Vĩnh Phúc",
+              "image_url": "http://media-image.giadinhvaphapluat.vn/thumb_x650x330/2020/03/02/1583159215-157-du-kien-0h-ngay-43-do-bo-phong-toa-xa-son-loi-vinh-phuc.jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://giadinhvaphapluat.vn/du-kien-0h-ngay-43-do-bo-phong-toa-xa-son-loi-vinh-phuc-p71984.html",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Moskva đã có ca nhiễm virus SARS-CoV-2 đầu tiên",
+              "image_url": "https://kenh14cdn.com/zoom/600_315/2020/photo1583155173937-1583155174018-crop-15831552313161458433966.jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "http://kenh14.vn/moskva-da-co-ca-nhiem-virus-sars-cov-2-dau-tien-20200302202342512.chn",
+                  "title": "Đọc báo"
+                }
+              ]
+            },
+            {
+              "title": "Thủ tướng: Không ngồi chờ, không có cơ chế xin cho trong phòng chống Covid-19",
+              "image_url": "https://img.vietnamfinance.vn/webp-jpg",
+              "subtitle": "Nguồn: undefined",
+              "buttons": [
+                {
+                  "type": "web_url",
+                  "url": "https://vietnamfinance.vn/thu-tuong-khong-ngoi-cho-khong-co-co-che-xin-cho-trong-phong-chong-covid-19-20180504224235321.htm",
+                  "title": "Đọc báo"
+                }
+              ]
             }
+          ]
         }
-    ]
+      }
+    }
+  ]
 }
