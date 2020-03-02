@@ -134,8 +134,9 @@ app.get('/corona', (req, res) => {
 
 app.get('/news', (req, res) => {
     graphqlclient.request(news_query).then(result => {
+        var push_json = news_json
         result.topTrueNews.forEach(n => {
-            news_json.messages[0].attachment.payload.elements.push({
+            push_json.messages[0].attachment.payload.elements.push({
                 "title": n.title,
                 "image_url": n.picture,
                 "subtitle": `Nguồn: ${n.siteName}`,
@@ -148,9 +149,9 @@ app.get('/news', (req, res) => {
                 ]
             })
         })
-        res.send(news_json)
-        
+        res.send(push_json)
     })
+    
     
 })
 app.set('port', process.env.PORT || 5000);
