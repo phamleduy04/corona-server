@@ -20,6 +20,9 @@ const query = `query countries {
         Last_Update
     }
 }`;
+const json_response_example = {
+    "messages": []
+}
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -53,8 +56,7 @@ app.get('/vn', (req,res) => {
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         let json_response = {
             "messages": [
-              {"text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục.`},
-              {"text": `Ngày cập nhật: ${date} `}
+              {"text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
             ]
         }
         res.send(json_response)
@@ -65,12 +67,29 @@ app.get('/us', (req,res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "US")
         var json_data = json_data[0]
-        res.send(json_data)
+        var timestamp = new Date(parseInt(json_data.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        let json_response = {
+            "messages": [
+              {"text": `Hoa Kì hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
+            ]
+        }
+        res.send(json_response)
     })
 })
 
-app.get('/test', (req,res) => {
-    res.send(test)
+app.get('/vnfull', (req,res) => {
+    graphqlclient.request(query).then(result => {
+        var json_response = {
+            "messages": []
+        }
+        result.provinces.forEach(tentp => {
+            let response = {"text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.`}
+            json_response["messages"].push(response)
+        });
+        console.log(json_response)
+        res.send(json_response)
+    })
 })
 
 app.set('port', process.env.PORT || 5000);
