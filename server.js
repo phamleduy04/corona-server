@@ -20,29 +20,7 @@ const query = `query countries {
         Last_Update
     }
 }`;
-const test_json =     {
-  "attachment":{
-    "type":"template",
-    "payload":{
-      "template_type":"generic",
-      "image_aspect_ratio": "square",
-      "elements":[
-        {
-          "title":"Chatfuel Rockets Jersey",
-          "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
-          "subtitle":"Size: M",
-          "buttons":[
-            {
-              "type":"web_url",
-              "url":"https://rockets.chatfuel.com/store",
-              "title":"View Item"
-            }
-          ]
-        }
-      ]
-    }
-  }
-}
+const test_json = require('./test.json')
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
