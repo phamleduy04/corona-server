@@ -21,35 +21,49 @@ const query = `query countries {
     }
 }`;
 const test_json = {
-    "messages": [
-      {
-        "attachment": {
-          "type": "template",
-          "payload": {
-            "template_type": "button",
-            "text": "Hello!",
-            "buttons": [
-              {
-                "type": "show_block",
-                "block_names": ["name of block"],
-                "title": "Show Block"
-              },
-              {
+ "messages": [
+    {
+      "attachment":{
+        "type":"template",
+        "payload":{
+          "template_type":"generic",
+          "image_aspect_ratio": "square",
+          "elements":[
+            {
+              "title":"Chatfuel Rockets Jersey",
+              "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
+              "subtitle":"Size: M",
+              "buttons":[
+                {
+                  "type":"web_url",
+                  "url":"https://rockets.chatfuel.com/store",
+                  "title":"View Item"
+                }
+              ]
+            },
+            {
+              "title":"Chatfuel Rockets Jersey",
+              "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
+              "subtitle":"Size: L",
+              "default_action": {
                 "type": "web_url",
-                "url": "https://rockets.chatfuel.com",
-                "title": "Visit Website"
+                "url": "https://rockets.chatfuel.com/store",
+                "messenger_extensions": true
               },
-              {
-                "url": "https://rockets.chatfuel.com/api/welcome",
-                "type":"json_plugin_url",
-                "title":"Postback"
-              }
-            ]
-          }
+              "buttons":[
+                {
+                  "type":"web_url",
+                  "url":"https://rockets.chatfuel.com/store",
+                  "title":"View Item"
+                }
+              ]
+            }
+          ]
         }
       }
-    ]
-  }
+    }
+  ]
+}
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
