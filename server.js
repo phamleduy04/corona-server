@@ -20,9 +20,36 @@ const query = `query countries {
         Last_Update
     }
 }`;
-const json_response_example = {
-    "messages": []
-}
+const test_json = {
+    "messages": [
+      {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "template_type": "button",
+            "text": "Hello!",
+            "buttons": [
+              {
+                "type": "show_block",
+                "block_names": ["name of block"],
+                "title": "Show Block"
+              },
+              {
+                "type": "web_url",
+                "url": "https://rockets.chatfuel.com",
+                "title": "Visit Website"
+              },
+              {
+                "url": "https://rockets.chatfuel.com/api/welcome",
+                "type":"json_plugin_url",
+                "title":"Postback"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -118,6 +145,10 @@ app.get('/korea', (req, res) => {
         }
         res.send(json_response)
     })
+})
+
+app.get('/corona', (req, res) => {
+    res.send(test_json)
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
