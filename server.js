@@ -20,13 +20,6 @@ const query = `query countries {
         Last_Update
     }
 }`;
-const test = {
-        "messages": [
-          {"text": "Test1 thành công"},
-          {"text": "Hello world, đây là test2"}
-        ]
-    }
-
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -56,7 +49,15 @@ app.get('/vn', (req,res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "Vietnam")
         var json_data = json_data[0]
-        res.send(json_data)
+        var timestamp = new Date(parseInt(json_data.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        let json_response = {
+            "messages": [
+              {"text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục.`},
+              {"text": `Ngày cập nhật: ${date} `}
+            ]
+        }
+        res.send(json_response)
     })
 })
 
