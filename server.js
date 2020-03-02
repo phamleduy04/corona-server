@@ -20,6 +20,13 @@ const query = `query countries {
         Last_Update
     }
 }`;
+const test = {
+        "messages": [
+          {"text": "Test1 thành công"},
+          {"text": "Hello world, đây là test2"}
+        ]
+    }
+
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -53,12 +60,16 @@ app.get('/vn', (req,res) => {
     })
 })
 
-app.get('./us', (req,res) => {
+app.get('/us', (req,res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "US")
         var json_data = json_data[0]
         res.send(json_data)
     })
+})
+
+app.get('/test', (req,res) => {
+    res.send(test)
 })
 
 app.set('port', process.env.PORT || 5000);
