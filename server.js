@@ -147,16 +147,18 @@ app.get('/news', (req, res) => {
     }
     graphqlclient.request(news_query).then(result => {
         result.topTrueNews.forEach(n => {
-            push_json.messages[0].attachment.payload.elements.push({
-                "title": n.title,
-                "image_url": n.picture,
-                "subtitle": `Nguồn: ${n.siteName}`,
-                "buttons": [{
-                    "type": "web_url",
-                    "url": n.url,
-                    "title": "Đọc báo"
-                }]
-            })
+            if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
+                push_json.messages[0].attachment.payload.elements.push({
+                    "title": n.title,
+                    "image_url": n.picture,
+                    "subtitle": `Nguồn: ${n.siteName}`,
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": n.url,
+                        "title": "Đọc báo"
+                    }]
+                })
+            }
         })
         res.send(push_json)
     })
