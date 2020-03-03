@@ -63,6 +63,20 @@ app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
 
+app.get('/italy', (req, res) => {
+    graphqlclient.request(query).then(result => {
+        var json_data = result.countries.filter(find => find.Country_Region == "Italy")
+        var json_data = json_data[0]
+        var timestamp = new Date(parseInt(json_data.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        let json_response = {
+            "messages": [
+                { "text": `Italia hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
+            ]
+        }
+        res.send(json_response)
+    })
+})
 app.get('/vn', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "Vietnam")
@@ -169,11 +183,11 @@ app.get('/news', (req, res) => {
                     push_json.messages[0].attachment.payload.elements.push({
                         "title": n.title,
                         "image_url": n.picture,
-                        "subtitle": `Nguồn: ${n.siteName}`,
+                        "subtitle": `Source: ${n.siteName}`,
                         "buttons": [{
                             "type": "web_url",
                             "url": n.url,
-                            "title": "Đọc báo"
+                            "title": "Go to website"
                         }]
                     })
                 }
