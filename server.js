@@ -28,6 +28,14 @@ const news_query = `query topTrueNews {
         picture
         }
 }`
+const global_news_query = `query topGlobalNews {
+    topGlobalNews {
+        title
+        url
+        siteName
+        picture
+        }
+}`
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -154,6 +162,25 @@ app.get('/news', (req, res) => {
             }
         }]
     }
+    if(req.query.quocte == 'true'){
+        graphqlclient.request(global_news_query).then(result => {
+            result.topGlobalNews.forEach(n => {
+                if(n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0){
+                    push_json.messages[0].attachment.payload.elements.push({
+                        "title": n.title,
+                        "image_url": n.picture,
+                        "subtitle": `Nguồn: ${n.siteName}`,
+                        "buttons": [{
+                            "type": "web_url",
+                            "url": n.url,
+                            "title": "Đọc báo"
+                        }]
+                    })
+                }
+            })
+            res.send(push_json)
+        })
+    } else {
     graphqlclient.request(news_query).then(result => {
         result.topTrueNews.forEach(n => {
             if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
@@ -171,6 +198,7 @@ app.get('/news', (req, res) => {
         })
         res.send(push_json)
     })
+}
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
