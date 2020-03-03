@@ -6,93 +6,23 @@
                 "template_type": "generic",
                 "image_aspect_ratio": "square",
                 "elements": [{
-                        "title": "Vũ Hán đóng cửa bệnh viện dã chiến, không ca tử vong mới ngoài Hồ Bắc",
-                        "image_url": "https://nld.mediacdn.vn/zoom/600_315/2020/3/3/photo-1-1583198684704881507678.jpg",
-                        "subtitle": "Nguồn: nld.com.vn",
+                        "title": "Chatfuel Rockets Jersey",
+                        "image_url": "https://www.gstatic.com/webp/gallery/1.sm.jpg",
+                        "subtitle": "Size: M",
                         "buttons": [{
                             "type": "web_url",
-                            "url": "http://nld.com.vn/thoi-su-quoc-te/vu-han-dong-cua-benh-vien-da-chien-khong-ca-tu-vong-moi-ngoai-ho-bac-20200303083013726.htm",
-                            "title": "Đọc báo"
+                            "url": "https://developers.google.com/speed/webp/gallery1",
+                            "title": "View Item"
                         }]
                     },
                     {
-                        "title": "Mỹ thêm 4 ca tử vong, phó tổng thống vẫn tin nguy cơ dịch bệnh thấp",
-                        "image_url": "https://image.xahoi.com.vn/resize_800x600/news/2020/03/03/my-33-xahoi.com.vn-w420-h252.jpg",
-                        "subtitle": "Nguồn: xahoi.com.vn",
+                        "title": "Chatfuel Rockets Jersey",
+                        "image_url": "https://www.gstatic.com/webp/gallery/2.sm.jpg",
+                        "subtitle": "Size: L",
                         "buttons": [{
                             "type": "web_url",
-                            "url": "https://xahoi.com.vn/my-them-4-ca-tu-vong-pho-tong-thong-van-tin-nguy-co-dich-benh-thap-350162.html",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "'Bệnh nhân số 0', Carnival và khởi nguồn của dịch Covid-19 tại Đức",
-                        "image_url": "https://image.xahoi.com.vn/resize_800x600/news/2020/03/03/duc-33-xahoi.com.vn-w420-h252.jpg",
-                        "subtitle": "Nguồn: xahoi.com.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "https://xahoi.com.vn/benh-nhan-so-0-carnival-va-khoi-nguon-cua-dich-covid-19-tai-duc-350163.html",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Mỹ: 6 người chết vì virus Corona, Washington trở thành điểm nóng",
-                        "image_url": "//img.daidoanket.vn/images/uploads/2020/03/03/covid-1583190391984.jpg",
-                        "subtitle": "Nguồn: daidoanket.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "http://daidoanket.vn/tin-tuc/my-6-nguoi-chet-vi-virus-corona-washington-tro-thanh-diem-nong-tintuc460490",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Sau 1 ngày đi học, Sơn La quyết định cho học sinh nghỉ thêm 2 tuần",
-                        "image_url": "https://thoimoi.vn/stores/news_dataimages/nhulan/032020/03/08/sau-1-ngay-di-hoc-son-la-quyet-dinh-cho-hoc-sinh-nghi-them-2-tuan20200303082136.0838620.jpg",
-                        "subtitle": "Nguồn: thoimoi.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "https://thoimoi.vn/sau-1-ngay-di-hoc-son-la-quyet-dinh-cho-hoc-sinh-nghi-them-2-tuan-221060.html",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Hơn 90.000 người nhiễm nCoV trên thế giới",
-                        "image_url": "https://thoimoi.vn/stores/news_dataimages/trinhhoanggiang/032020/03/08/iranncov2-1583192232-7488-1583192369-1200x020200303082233.8439150.jpg",
-                        "subtitle": "Nguồn: thoimoi.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "https://thoimoi.vn/hon-90000-nguoi-nhiem-ncov-tren-the-gioi-221061.html",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Tình hình dịch Covid-19 lúc 8h00', ngày 3/3/2020: Dịch lan ra 77 quốc gia, Iran nhận cứu trợ của WHO",
-                        "image_url": "http://baoquangninh.com.vn/dataimages/202003/original/images1367140_hang_vien_tro_iran_15831861400641240939811.png",
-                        "subtitle": "Nguồn: baoquangninh.com.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "http://www.baoquangninh.com.vn/dichbenhncov/202003/tinh-hinh-dich-covid-19-luc-8h00-ngay-332020-dich-lan-ra-77-quoc-gia-iran-nhan-cuu-tro-cua-who-2473221",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Sau 1 ngày đi học, tỉnh Sơn La ra quyết định cho tất cả các cấp nghỉ tiếp 2 tuần!",
-                        "image_url": "http://mcnews1.media.netnews.vn/netnews/archive/imageslead/2020030308/tinngan082208_656290808.jpg",
-                        "subtitle": "Nguồn: netnews.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "http://netnews.vn/Sau-1-ngay-di-hoc-tinh-Son-La-ra-quyet-dinh-cho-tat-ca-cac-cap-nghi-tiep-2-tuan-thoi-su-1-1547-2226205.html",
-                            "title": "Đọc báo"
-                        }]
-                    },
-                    {
-                        "title": "Dịch Covid-19 ở Italy: Số người chết tăng vọt lên 52, hơn 2.000 ca mắc bệnh",
-                        "image_url": "https://sohanews.sohacdn.com/zoom/600_315/2020/3/3/khach-du-lich-milan-06262848-15831971411561708448003-crop-1583197149038452765663.JPG",
-                        "subtitle": "Nguồn: soha.vn",
-                        "buttons": [{
-                            "type": "web_url",
-                            "url": "http://soha.vn/dich-covid-19-o-italy-so-nguoi-chet-tang-vot-len-52-hon-2000-ca-mac-benh-20200303080222848.htm",
-                            "title": "Đọc báo"
+                            "url": "https://developers.google.com/speed/webp/gallery1",
+                            "title": "View Item"
                         }]
                     }
                 ]
