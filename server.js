@@ -48,16 +48,16 @@ const graphqlclient = new graphql.GraphQLClient(url, {
 
 var app = express();
 app.use(bodyParser.urlencoded({
-  extended: false
+    extended: false
 }));
 var server = http.createServer(app);
 
 app.get('/', (req, res) => {
     console.log(req.query)
     res.send("Home page. Server running okay.");
-  });
+});
 
-app.get('/vn', (req,res) => {
+app.get('/vn', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "Vietnam")
         var json_data = json_data[0]
@@ -65,14 +65,14 @@ app.get('/vn', (req,res) => {
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         let json_response = {
             "messages": [
-              {"text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
+                { "text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
             ]
         }
         res.send(json_response)
     })
 })
 
-app.get('/us', (req,res) => {
+app.get('/us', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "US")
         var json_data = json_data[0]
@@ -80,22 +80,22 @@ app.get('/us', (req,res) => {
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         let json_response = {
             "messages": [
-              {"text": `Hoa Kì hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
+                { "text": `Hoa Kì hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
             ]
         }
         res.send(json_response)
     })
 })
 
-app.get('/vnfull', (req,res) => {
+app.get('/vnfull', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_response = {
             "messages": []
         }
         result.provinces.forEach(tentp => {
-            let response = {"text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.`}
+            let response = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.` }
             json_response["messages"].push(response)
-        }); 
+        });
         res.send(json_response)
     })
 })
@@ -107,7 +107,7 @@ app.get('/canada', (req, res) => {
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         let json_response = {
             "messages": [
-              {"text": `Canada hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
+                { "text": `Canada hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
             ]
         }
         res.send(json_response)
@@ -121,7 +121,7 @@ app.get('/korea', (req, res) => {
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         let json_response = {
             "messages": [
-              {"text": `Hàn Quốc hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}`},
+                { "text": `Hàn Quốc hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
             ]
         }
         res.send(json_response)
@@ -133,30 +133,37 @@ app.get('/corona', (req, res) => {
 })
 
 app.get('/news', (req, res) => {
+    var push_json = {
+        "messages": [{
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "image_aspect_ratio": "square",
+                    "elements": []
+                }
+            }
+        }]
+    }
     graphqlclient.request(news_query).then(result => {
-        var push_json = news_json
         result.topTrueNews.forEach(n => {
             push_json.messages[0].attachment.payload.elements.push({
                 "title": n.title,
                 "image_url": n.picture,
                 "subtitle": `Nguồn: ${n.siteName}`,
-                "buttons": [
-                    {
-                        "type": "web_url",
-                        "url": n.url,
-                        "title": "Đọc báo"
-                    }
-                ]
+                "buttons": [{
+                    "type": "web_url",
+                    "url": n.url,
+                    "title": "Đọc báo"
+                }]
             })
         })
         res.send(push_json)
     })
-    
-    
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
-  
+
 server.listen(app.get('port'), app.get('ip'), function() {
-console.log("Chat bot server listening at %s:%d ", app.get('ip'), app.get('port'));
+    console.log("Chat bot server listening at %s:%d ", app.get('ip'), app.get('port'));
 });
