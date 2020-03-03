@@ -28,8 +28,6 @@ const news_query = `query topTrueNews {
         picture
         }
 }`
-var news_json = require('./news.json')
-const test_json = require('./test.json')
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -126,10 +124,6 @@ app.get('/korea', (req, res) => {
         }
         res.send(json_response)
     })
-})
-
-app.get('/corona', (req, res) => {
-    res.send(test_json)
 })
 
 app.get('/news', (req, res) => {
