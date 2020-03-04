@@ -244,7 +244,7 @@ app.get('/corona', (req, res) => {
 })
 
 app.get('/countrycode', (req, res) => {
-    res.redirect('https://www.iban.com/country-codes');
+    res.redirect('https://www.facebook.com/capnhatcorona/photos/a.101726258114169/101721558114639/');
 })
 
 app.get('/korea', (req, res) => {
