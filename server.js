@@ -36,6 +36,87 @@ const global_news_query = `query topGlobalNews {
         picture
         }
 }`
+
+const search = {
+    "ad": "Andorra",
+    "ae": "United Arab Emirates",
+    "af": "Afghanistan",
+    "am": "Armenia",
+    "ar": "Argentina",
+    "at": "Austria",
+    "au": "Australia",
+    "az": "Azerbaijan",
+    "be": "Belgium",
+    "bh": "Bahrain",
+    "br": "Brazil",
+    "by": "Belarus",
+    "ca": "Canada",
+    "ch": "Switzerland",
+    "cl": "Chile",
+    "cn": "Mainland China",
+    "cz": "Czech Republic",
+    "de": "Germany",
+    "dk": "Denmark",
+    "do": "Dominican Republic",
+    "dz": "Algeria",
+    "ec": "Ecuador",
+    "ee": "Estonia",
+    "eg": "Egypt",
+    "es": "Spain",
+    "fi": "Finland",
+    "fr": "France",
+    "gb": "UK",
+    "ge": "Georgia",
+    "gr": "Greece",
+    "hk": "Hong Kong",
+    "hr": "Croatia",
+    "id": "Indonesia",
+    "ie": "Ireland",
+    "il": "Israel",
+    "in": "India",
+    "iq": "Iraq",
+    "ir": "Iran",
+    "is": "Iceland",
+    "jo": "Jordan",
+    "jp": "Japan",
+    "kh": "Cambodia",
+    "kr": "South Korea",
+    "kw": "Kuwait",
+    "lb": "Lebanon",
+    "li": "Liechtenstein",
+    "lk": "Sri Lanka",
+    "lt": "Lithuania",
+    "lu": "Luxembourg",
+    "lv": "Latvia",
+    "ma": "Morocco",
+    "mk": "North Macedonia",
+    "mx": "Mexico",
+    "my": "Malaysia",
+    "ng": "Nigeria",
+    "no": "Norway",
+    "np": "Nepal",
+    "nz": "New Zealand",
+    "om": "Oman",
+    "others": "Others",
+    "ph": "Philippines",
+    "pk": "Pakistan",
+    "pt": "Portugal",
+    "qa": "Qatar",
+    "ro": "Romania",
+    "ru": "Russia",
+    "sa": "Saudi Arabia",
+    "se": "Sweden",
+    "sg": "Singapore",
+    "sm": "San Marino",
+    "sn": "Senegal",
+    "th": "Thailand",
+    "tn": "Tunisia",
+    "tw": "Taiwan",
+    "ua": "Ukrane",
+    "us": "US",
+    "vn": "Vietnam"
+}
+
 const graphqlclient = new graphql.GraphQLClient(url, {
     headers: {
         Authority: "corona-api.kompa.ai",
@@ -77,6 +158,7 @@ app.get('/italy', (req, res) => {
         res.send(json_response)
     })
 })
+
 app.get('/vn', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "Vietnam")
@@ -119,6 +201,7 @@ app.get('/vnfull', (req, res) => {
         res.send(json_response)
     })
 })
+
 app.get('/canada', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "Canada")
@@ -133,6 +216,37 @@ app.get('/canada', (req, res) => {
         res.send(json_response)
     })
 })
+
+app.get('/corona', (req, res) => {
+    var tukhoa = req.query.countries.toLowerCase()
+    if (search[tukhoa]){
+        graphqlclient.request(query).then(result => {
+            var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
+            var json_data = json_data[0]
+            var timestamp = new Date(parseInt(json_data.Last_Update))
+            var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+            let json_response = {
+                "messages": [
+                    { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
+                ]
+            }
+            res.send(json_response)
+        })
+    } else if (tukhoa.length !== 2){
+        let json_response = {"messages": [
+            {"attachment": {"type": "template","payload": {"template_type": "button","text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.","buttons": [{"type": "web_url","url": "https://corona-js.herokuapp.com/countrycode","title": "Click để vào trang web!"}]}}}],"text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."}
+            res.send(json_response)
+    } else if (tukhoa.length == 2 && !search[tukhoa]){
+        let json_response = {
+            "messages": [{"text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!"}]}
+        res.send(json_response)
+    }
+})
+
+app.get('/countrycode', (req, res) => {
+    res.redirect('https://www.iban.com/country-codes');
+})
+
 app.get('/korea', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_data = result.countries.filter(find => find.Country_Region == "South Korea")
