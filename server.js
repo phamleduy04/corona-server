@@ -39,6 +39,7 @@ const global_news_query = `query topGlobalNews {
 
 const search = {
     "ad": "Andorra",
+    "it": "Italy",
     "ae": "United Arab Emirates",
     "af": "Afghanistan",
     "am": "Armenia",
@@ -114,7 +115,8 @@ const search = {
     "tw": "Taiwan",
     "ua": "Ukrane",
     "us": "US",
-    "vn": "Vietnam"
+    "vn": "Vietnam",
+    "nl": "Netherlands",
 }
 
 const graphqlclient = new graphql.GraphQLClient(url, {
