@@ -146,51 +146,6 @@ app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
 
-app.get('/italy', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "Italy")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Italia hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
-})
-
-app.get('/vn', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "Vietnam")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Việt Nam hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
-})
-
-app.get('/us', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "US")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Hoa Kì hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
-})
-
 app.get('/vnfull', (req, res) => {
     graphqlclient.request(query).then(result => {
         var json_response = {
@@ -200,21 +155,6 @@ app.get('/vnfull', (req, res) => {
             let response = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.` }
             json_response["messages"].push(response)
         });
-        res.send(json_response)
-    })
-})
-
-app.get('/canada', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "Canada")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Canada hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
         res.send(json_response)
     })
 })
@@ -247,50 +187,6 @@ app.get('/corona', (req, res) => {
 
 app.get('/countrycode', (req, res) => {
     res.redirect('https://www.facebook.com/capnhatcorona/photos/a.101726258114169/101721558114639/');
-})
-
-app.get('/korea', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "South Korea")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Hàn Quốc hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
-})
-
-app.get('/halan', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "Netherlands")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Hà Lan hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
-})
-app.get('/china', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_data = result.countries.filter(find => find.Country_Region == "Mainland China")
-        var json_data = json_data[0]
-        var timestamp = new Date(parseInt(json_data.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        let json_response = {
-            "messages": [
-                { "text": `Trung Quốc hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-            ]
-        }
-        res.send(json_response)
-    })
 })
 
 app.get('/news', (req, res) => {
