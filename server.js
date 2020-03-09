@@ -1,8 +1,12 @@
 var http = require('http');
 var bodyParser = require('body-parser');
 var express = require('express');
+const fs = require('fs');
 const url = "https://corona-api.kompa.ai/graphql";
 const graphql = require("graphql-request");
+const NewsAPI = require('newsapi');
+const {news_api_key} = require('./config.json')
+const newsapi = new NewsAPI(news_api_key);
 const query = `query countries {
     countries {
         Country_Region
@@ -39,7 +43,6 @@ const global_news_query = `query topGlobalNews {
 
 const search = {
     "ad": "Andorra",
-    "it": "Italy",
     "ae": "United Arab Emirates",
     "af": "Afghanistan",
     "am": "Armenia",
@@ -78,6 +81,7 @@ const search = {
     "iq": "Iraq",
     "ir": "Iran",
     "is": "Iceland",
+    "it": "Italy",
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
@@ -94,6 +98,7 @@ const search = {
     "mx": "Mexico",
     "my": "Malaysia",
     "ng": "Nigeria",
+    "nl": "Netherlands",
     "no": "Norway",
     "np": "Nepal",
     "nz": "New Zealand",
@@ -115,8 +120,7 @@ const search = {
     "tw": "Taiwan",
     "ua": "Ukrane",
     "us": "US",
-    "vn": "Vietnam",
-    "nl": "Netherlands",
+    "vn": "Vietnam"
 }
 
 const graphqlclient = new graphql.GraphQLClient(url, {
@@ -145,23 +149,68 @@ app.get('/', (req, res) => {
     console.log(req.query)
     res.send("Home page. Server running okay.");
 });
+app.get('/language', (req, res) => {
+    let lang = JSON.parse(fs.readFileSync('./lang.json', 'utf8'));
+    if (req.query.lang == "vn") {
+        userid = req.query.userid
+        if (!lang[userid]) lang[userid] = {
+            lang: "vn"
+        }
+        fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
+            if (err) console.log(err)
+        });
+        var json_response = { "messages": [{ "text": "Đã chọn ngôn ngữ của bạn là Tiếng Việt (Vietnamese)" }] }
+        res.send(json_response)
+    } else if (req.query.lang == "en") {
+        userid = req.query.userid
+        if (!lang[userid]) lang[userid] = {
+            lang: "en"
+        }
+        fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
+            if (err) console.log(err)
+        });
+        var json_response = { "messages": [{ "text": "Your selected language is English" }] }
+        res.send(json_response)
+    }
+})
 
 app.get('/vnfull', (req, res) => {
-    graphqlclient.request(query).then(result => {
-        var json_response = {
-            "messages": []
-        }
-        result.provinces.forEach(tentp => {
-            let response = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.` }
-            json_response["messages"].push(response)
-        });
-        res.send(json_response)
-    })
+    let lang = JSON.parse(fs.readFileSync('./lang.json', 'utf8'));
+    var userid = req.query.userid
+    if (!lang[userid]) lang[userid] = {
+        lang: "vn"
+    }
+    fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
+        if (err) console.log(err)
+    });
+    if (lang[req.query.userid].lang == 'vn') {
+        graphqlclient.request(query).then(result => {
+            var json_response = {
+                "messages": []
+            }
+            result.provinces.forEach(tentp => {
+                var response = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.` }
+                json_response["messages"].push(response)
+            })
+            res.send(json_response)
+        })
+    } else if (lang[req.query.userid].lang == 'en') {
+        graphqlclient.request(query).then(result => {
+            var json_response = {
+                "messages": []
+            }
+            result.provinces.forEach(tentp => {
+                var response = { "text": `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.` }
+                json_response["messages"].push(response)
+            })
+            res.send(json_response)
+        })
+    }
 })
 
 app.get('/corona', (req, res) => {
     var tukhoa = req.query.countries.toLowerCase()
-    if (search[tukhoa]){
+    if (search[tukhoa]) {
         graphqlclient.request(query).then(result => {
             var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
             var json_data = json_data[0]
@@ -174,13 +223,18 @@ app.get('/corona', (req, res) => {
             }
             res.send(json_response)
         })
-    } else if (tukhoa.length !== 2){
-        let json_response = {"messages": [
-            {"attachment": {"type": "template","payload": {"template_type": "button","text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.","buttons": [{"type": "web_url","url": "https://corona-js.herokuapp.com/countrycode","title": "Click để vào trang web!"}]}}}],"text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."}
-            res.send(json_response)
-    } else if (tukhoa.length == 2 && !search[tukhoa]){
+    } else if (tukhoa.length !== 2) {
         let json_response = {
-            "messages": [{"text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!"}]}
+            "messages": [
+                { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click để vào trang web!" }] } } }
+            ],
+            "text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."
+        }
+        res.send(json_response)
+    } else if (tukhoa.length == 2 && !search[tukhoa]) {
+        let json_response = {
+            "messages": [{ "text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!" }]
+        }
         res.send(json_response)
     }
 })
@@ -203,21 +257,26 @@ app.get('/news', (req, res) => {
         }]
     }
     if (req.query.quocte == 'true') {
-        graphqlclient.request(global_news_query).then(result => {
-            result.topGlobalNews.forEach(n => {
-                push_json.messages[0].attachment.payload.elements.push({
-                    "title": n.title,
-                    "image_url": n.picture,
-                    "subtitle": `Source: ${n.siteName}`,
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": n.url,
-                        "title": "Go to website"
-                    }]
+        newsapi.v2.topHeadlines({
+            q: 'coronavirus',
+            pageSize: 10,
+            language: 'en',
+            country: 'us'
+          }).then(response => {
+                response.articles.forEach(n => {
+                    push_json.messages[0].attachment.payload.elements.push({
+                        "title": n.title,
+                        "image_url": n.urlToImage,
+                        "subtitle": `Source: ${n.source.name}`,
+                        "buttons": [{
+                            "type": "web_url",
+                            "url": n.url,
+                            "title": "Go to website"
+                        }]
+                    })
                 })
-            })
-            res.send(push_json)
-        })
+            res.send(push_json);
+          });
     } else {
         graphqlclient.request(news_query).then(result => {
             result.topTrueNews.forEach(n => {
