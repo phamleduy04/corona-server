@@ -144,11 +144,18 @@ app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
 app.get('/language', (req, res) => {
+    console.log(req.query);
     let lang = JSON.parse(fs.readFileSync('./lang.json', 'utf8'));
     if (req.query.lang == "vn") {
         userid = req.query.userid
-        if (!lang[userid]) lang[userid] = {
+        if (!lang[userid]) {
+            lang[userid] = {
             lang: "vn"
+        }
+        } else {
+            lang[userid] = {
+                lang: "vn"
+            }
         }
         fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
             if (err) console.log(err)
@@ -157,8 +164,14 @@ app.get('/language', (req, res) => {
         res.send(json_response)
     } else if (req.query.lang == "en") {
         userid = req.query.userid
-        if (!lang[userid]) lang[userid] = {
+        if (!lang[userid]) {
+            lang[userid] = {
             lang: "en"
+        }
+        } else {
+            lang[userid] = {
+                lang: "en"
+            }
         }
         fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
             if (err) console.log(err)
@@ -203,6 +216,7 @@ app.get('/vnfull', (req, res) => {
 })
 
 app.get('/corona', (req, res) => {
+    console.log(req.query)
     let lang = JSON.parse(fs.readFileSync('./lang.json', 'utf8'));
     var tukhoa = req.query.countries.toLowerCase()
     var userid = req.query.userid
