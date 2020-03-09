@@ -1,6 +1,6 @@
 {
   "name": "corona-api",
-  "version": "1.1.7",
+  "version": "2.0.0",
   "description": "Corona API ",
   "main": "server.js",
   "dependencies": {
@@ -17,7 +17,7 @@
     "start": "node server.js"
   },
   "author": "Duy Pham",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/phamleduy04/corona-server.git"

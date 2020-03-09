@@ -32,14 +32,6 @@ const news_query = `query topTrueNews {
         picture
         }
 }`
-const global_news_query = `query topGlobalNews {
-    topGlobalNews {
-        title
-        url
-        siteName
-        picture
-        }
-}`
 
 const search = {
     "ad": "Andorra",
@@ -91,9 +83,11 @@ const search = {
     "li": "Liechtenstein",
     "lk": "Sri Lanka",
     "lt": "Lithuania",
+    "tg": "Togo",
     "lu": "Luxembourg",
     "lv": "Latvia",
     "ma": "Morocco",
+    "mc": "Monaco",
     "mk": "North Macedonia",
     "mx": "Mexico",
     "my": "Malaysia",
@@ -209,38 +203,79 @@ app.get('/vnfull', (req, res) => {
 })
 
 app.get('/corona', (req, res) => {
+    let lang = JSON.parse(fs.readFileSync('./lang.json', 'utf8'));
     var tukhoa = req.query.countries.toLowerCase()
-    if (search[tukhoa]) {
-        graphqlclient.request(query).then(result => {
-            var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
-            var json_data = json_data[0]
-            var timestamp = new Date(parseInt(json_data.Last_Update))
-            var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+    var userid = req.query.userid
+    if (!lang[userid]) lang[userid] = {
+        lang: "vn"
+    }
+    fs.writeFile("./lang.json", JSON.stringify(lang), (err) => {
+        if (err) console.log(err)
+    });
+
+    if (lang[req.query.userid].lang == 'vn') {
+        if (search[tukhoa]){
+            graphqlclient.request(query).then(result => {
+                var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
+                var json_data = json_data[0]
+                var timestamp = new Date(parseInt(json_data.Last_Update))
+                var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+                let json_response = {
+                    "messages": [
+                        { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
+                    ]
+                }
+                res.send(json_response)
+            })
+        } else if (tukhoa.length == 2) {
             let json_response = {
                 "messages": [
-                    { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
-                ]
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click để vào trang web!" }] } } }
+                ],
+                "text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."
             }
             res.send(json_response)
-        })
-    } else if (tukhoa.length !== 2) {
-        let json_response = {
-            "messages": [
-                { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click để vào trang web!" }] } } }
-            ],
-            "text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."
+
+        } else if (tukhoa.length == 2 && !search[tukhoa]) {
+            let json_response = {
+                "messages": [{ "text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!" }]
+            }
+            res.send(json_response)
         }
-        res.send(json_response)
-    } else if (tukhoa.length == 2 && !search[tukhoa]) {
-        let json_response = {
-            "messages": [{ "text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!" }]
+
+    } else if (lang[req.query.userid].lang == 'en') {
+        if (search[tukhoa]){
+            graphqlclient.request(query).then(result => {
+                var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
+                var json_data = json_data[0]
+                var timestamp = new Date(parseInt(json_data.Last_Update))
+                var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+                let json_response = {
+                    "messages": [
+                        { "text": `${search[tukhoa]} currently has ${json_data.Confirmed} confirmed cases, ${json_data.Deaths} death cases and ${json_data.Recovered} recoveries cases. \nUpdated date: ${date}` },
+                    ]
+                }
+                res.send(json_response)
+            })
+        } else if (tukhoa.length == 2) {
+            let json_response = {
+                "messages": [
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a 2-letter country code to use this feature. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here." }] } } }
+                ],
+                "text": "Tips: Please pay attention to column Alpha-2 code <3."
+            }
+            res.send(json_response)
+        } else if (tukhoa.length == 2 && !search[tukhoa]) {
+            let json_response = {
+                "messages": [{ "text": "Error, did not find the name of the country you are looking for, or this country currently has no coronavirus cases!" }]
+            }
+            res.send(json_response)
         }
-        res.send(json_response)
     }
 })
 
 app.get('/countrycode', (req, res) => {
-    res.redirect('https://www.facebook.com/capnhatcorona/photos/a.101726258114169/101721558114639/');
+    res.redirect('https://www.iban.com/country-codes');
 })
 
 app.get('/news', (req, res) => {
