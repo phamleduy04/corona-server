@@ -161,8 +161,9 @@ app.get('/vnfull', (req, res) => {
         graphqlclient.request(query).then(result => {
             var total = ""
             result.provinces.forEach(tentp => {
-                var line = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n\n` }
+                var line = `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n\n`
                 total += line
+                console.log(line)
             })
             var response = {
                 "messages": [{ "text": `${total}` }]
