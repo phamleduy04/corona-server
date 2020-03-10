@@ -149,7 +149,7 @@ app.get('/vnfull', (req, res) => {
         graphqlclient.request(query).then(result => {
             var total = ""
             result.provinces.forEach(tentp => {
-                var line = `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.\n`
+                var line = `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.\n\n`
                 total += line  
             })
             var response = {
@@ -161,10 +161,13 @@ app.get('/vnfull', (req, res) => {
         graphqlclient.request(query).then(result => {
             var total = ""
             result.provinces.forEach(tentp => {
-                var response = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.` }
+                var line = { "text": `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n\n` }
                 total += line
             })
-            res.send(total)
+            var response = {
+                "messages": [{ "text": `${total}` }]
+            }
+            res.send(response)
         })
     }
 })
@@ -194,18 +197,33 @@ app.get('/corona', (req, res) => {
             }
         })
     } else if (tukhoa.length !== 2) {
-        let json_response = {
-            "messages": [
-                { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click để vào trang web!" }] } } }
-            ],
-            "text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."
+        if (req.query.lang.toLowerCase() == 'en') {
+            var json_response = {
+                "messages": [
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a 2-letter country code to use this feature. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
+                ],
+                "text": "Tips: Pay attention to the Alpha-2 code column <3."
+            }
+        } else {
+            var json_response = {
+                "messages": [
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập mã quốc gia 2 chữ để sử dụng tính năng này. Click vào nút ở dưới để tham khảo.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click để vào trang web!" }] } } }
+                ],
+                "text": "Tips: Hãy chú ý tới cột Alpha-2 code nha <3."
+            }
         }
         res.send(json_response)
 
     } else if (tukhoa.length == 2 && !search[tukhoa.toLowerCase()]) {
-        let json_response = {
-            "messages": [{ "text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!" }]
-        }
+        if (req.query.lang.toLowerCase() == 'en') {
+            var json_response = {
+                "messages": [{ "text": "Error, did not find the name of the country you are looking for, or this country currently has no coronavirus cases!" }]
+            } 
+        } else {
+            var json_response = {
+                "messages": [{ "text": "Lỗi, không tìm thấy tên đất nước bạn tìm, hoặc nước này hiện tại đang không có dịch corona!" }]
+            }
+    }
         res.send(json_response)
     }
 });
