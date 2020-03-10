@@ -1,12 +1,17 @@
 var http = require('http');
 var bodyParser = require('body-parser');
 var express = require('express');
-const fs = require('fs');
+const getJSON = require('get-json')
+const capitalize = require('capitalize');
+var UsaStates = require('usa-states').UsaStates;
 const url = "https://corona-api.kompa.ai/graphql";
+const arcgis_url = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=1=1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&outSR=102100&resultOffset=0&resultRe%20cordCount=160&cacheHint=true'
 const graphql = require("graphql-request");
 const NewsAPI = require('newsapi');
 const { news_api_key } = require('./config.json')
 const newsapi = new NewsAPI(news_api_key);
+const ms = require('ms')
+const fs = require('fs')
 const query = `query countries {
     countries {
         Country_Region
@@ -140,9 +145,58 @@ app.use(bodyParser.urlencoded({
 var server = http.createServer(app);
 
 app.get('/', (req, res) => {
-    console.log(req.query)
     res.send("Home page. Server running okay.");
 });
+setInterval(function() {
+    getJSON(arcgis_url).then(response => {
+        if(response.error) return;
+        fs.writeFileSync('./data.json',JSON.stringify(response))
+        console.log('Đã ghi')
+    })
+},ms('15m'))
+
+app.get('/ussearch', (req, res) => {
+    var usStates = new UsaStates();
+    var statesNameslist = usStates.arrayOf('names');
+    var state_name = capitalize.words(req.query.state);
+    if (statesNameslist.indexOf(state_name) > -1){
+        var response = JSON.parse(fs.readFileSync('./data.json','utf8'))
+        var state = response.features.filter(m => m.attributes.Country_Region == "US" && m.attributes.Province_State == state_name)
+        var state = state[0]
+        var timestamp = new Date(parseInt(state.attributes.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        if (req.query.lang == 'en'){
+            var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json)
+        } else { //another lang
+            var json_string = `Tiểu bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json)
+        }
+    } else {
+        if (req.query.lang == 'en'){
+        var json_response = {
+            "messages": [
+                { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a valid state name. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
+            ]
+        }
+        res.send(json_response)
+        } else {
+            var json_response = {
+                "messages": [
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập tên hợp lệ của tiểu bang Hoa Kì. Click vào nút dưới đây để tham khảo ", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
+                ]
+            }
+            res.send(json_response)
+        }
+    }
+    })
+
 
 app.get('/vnfull', (req, res) => {
     if (req.query.lang == 'en') {
@@ -163,11 +217,11 @@ app.get('/vnfull', (req, res) => {
             result.provinces.forEach(tentp => {
                 var line = `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n\n`
                 total += line
-                console.log(line)
             })
             var response = {
                 "messages": [{ "text": `${total}` }]
             }
+            console.log(JSON.stringify(total))
             res.send(response)
         })
     }
@@ -229,6 +283,9 @@ app.get('/corona', (req, res) => {
     }
 });
 
+app.get('/usstates', (req, res) => {
+    res.redirect('https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#States')
+})
 app.get('/countrycode', (req, res) => {
     res.redirect('https://www.iban.com/country-codes');
 })
@@ -251,7 +308,7 @@ app.get('/news', (req, res) => {
             q: 'coronavirus',
             pageSize: 10,
             language: 'en',
-            country: 'us'
+            country: 'ca'
         }).then(response => {
             response.articles.forEach(n => {
                 push_json.messages[0].attachment.payload.elements.push({
@@ -291,5 +348,5 @@ app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
 
 server.listen(app.get('port'), app.get('ip'), function() {
-    console.log("Chat bot server listening at %s:%d ", app.get('ip'), app.get('port'));
+    console.log("Corona-js is listening at %s:%d ", app.get('ip'), app.get('port'));
 });
