@@ -82,7 +82,7 @@ const search = {
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
-    "kr": "South Korea",
+    "kr": "Republic of Korea",
     "kw": "Kuwait",
     "lb": "Lebanon",
     "li": "Liechtenstein",
