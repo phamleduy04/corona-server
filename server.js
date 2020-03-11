@@ -54,7 +54,7 @@ const search = {
     "ca": "Canada",
     "ch": "Switzerland",
     "cl": "Chile",
-    "cn": "Mainland China",
+    "cn": "China",
     "cz": "Czech Republic",
     "de": "Germany",
     "dk": "Denmark",
