@@ -66,7 +66,7 @@ const search = {
     "es": "Spain",
     "fi": "Finland",
     "fr": "France",
-    "gb": "UK",
+    "gb": "United Kingdom",
     "ge": "Georgia",
     "gr": "Greece",
     "hk": "Hong Kong",
