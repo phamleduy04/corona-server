@@ -119,7 +119,7 @@ const search = {
     "tw": "Taiwan",
     "ua": "Ukrane",
     "us": "US",
-    "vn": "Vietnam"
+    "vn": "Viet Nam"
 }
 
 const graphqlclient = new graphql.GraphQLClient(url, {
@@ -252,7 +252,7 @@ app.get('/corona', (req, res) => {
             }
         })
     } else if (tukhoa.length !== 2) {
-        if (req.query.lang.toLowerCase() == 'en') {
+        if (req.query.lang == 'en') {
             var json_response = {
                 "messages": [
                     { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a 2-letter country code to use this feature. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
