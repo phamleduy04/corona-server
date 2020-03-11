@@ -82,7 +82,7 @@ const search = {
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
-    "kr": "Republic of Korea",
+    "kr": "\"Korea; South\"",
     "kw": "Kuwait",
     "lb": "Lebanon",
     "li": "Liechtenstein",
@@ -119,7 +119,7 @@ const search = {
     "tw": "Taiwan",
     "ua": "Ukrane",
     "us": "US",
-    "vn": "Viet Nam"
+    "vn": "Vietnam"
 }
 
 const graphqlclient = new graphql.GraphQLClient(url, {
