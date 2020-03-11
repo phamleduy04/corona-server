@@ -228,9 +228,9 @@ app.get('/vnfull', (req, res) => {
 })
 
 app.get('/coronatry', (req, res) => {
-    var tukhoa = req.query.countries
+    if (!req.query.countries) res.send('Invalid')
+    var tukhoa = req.query.countries.toLowerCase()
     if (search[tukhoa]) {
-        var tukhoa = tukhoa.toLowerCase();
         graphqlclient.request(query).then(result => {
             var json_data = result.countries.filter(find => find.Country_Region == search[tukhoa])
             var json_data = json_data[0]
