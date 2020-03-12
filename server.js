@@ -82,7 +82,7 @@ const search = {
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
-    "kr": "Korea, South",
+    "kr": "Korea; South",
     "kw": "Kuwait",
     "lb": "Lebanon",
     "li": "Liechtenstein",
@@ -147,14 +147,20 @@ var server = http.createServer(app);
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
-setInterval(function() {
+setInterval(function () {
     getJSON(arcgis_url).then(response => {
-        if (response.error) return;
+        if (response.error) {
+            return console.log('Error!');
+        } else {
         fs.writeFileSync('./data.json', JSON.stringify(response))
         console.log('Đã ghi')
+        }
     })
-}, ms('15m'))
+}, ms('1m'))
 
+app.get('/cansearch', (req,res) => {
+
+})
 app.get('/ussearch', (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
@@ -243,7 +249,8 @@ app.get('/coronatry', (req, res) => {
                     ]
                 }
                 res.send(json_response)
-            } else {
+            }
+            else {
                 let json_response = {
                     "messages": [
                         { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
@@ -257,7 +264,7 @@ app.get('/coronatry', (req, res) => {
     }
 })
 
-app.get('/ussearchtry', (req, res) => {
+app.get('/ussearchtry' , (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
     var state_name = capitalize.words(req.query.state);
@@ -351,7 +358,6 @@ app.get('/countrycode', (req, res) => {
 })
 
 app.get('/news', (req, res) => {
-    var tukhoa = req.query.countries.toLowerCase()
     var push_json = {
         "messages": [{
             "attachment": {
@@ -364,7 +370,28 @@ app.get('/news', (req, res) => {
             }
         }]
     }
-    if (search[tukhoa] && tukhoa == 'vn') {
+    if (req.query.quocte == 'true') {
+        newsapi.v2.topHeadlines({
+            q: 'coronavirus',
+            pageSize: 10,
+            language: 'en',
+            country: 'ca'
+        }).then(response => {
+            response.articles.forEach(n => {
+                push_json.messages[0].attachment.payload.elements.push({
+                    "title": n.title,
+                    "image_url": n.urlToImage,
+                    "subtitle": `Source: ${n.source.name}`,
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": n.url,
+                        "title": "Go to website"
+                    }]
+                })
+            })
+            res.send(push_json);
+        });
+    } else {
         graphqlclient.request(news_query).then(result => {
             result.topTrueNews.forEach(n => {
                 if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
@@ -382,32 +409,11 @@ app.get('/news', (req, res) => {
             })
             res.send(push_json)
         })
-    } else if (search[tukhoa]) {
-        newsapi.v2.topHeadlines({
-            q: 'coronavirus',
-            pageSize: 10,
-            language: 'en',
-            country: tukhoa
-        }).then(response => {
-            response.articles.forEach(n => {
-                push_json.messages[0].attachment.payload.elements.push({
-                    "title": n.title,
-                    "image_url": n.urlToImage,
-                    "subtitle": `Source: ${n.source.name}`,
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": n.url,
-                        "title": "Go to website"
-                    }]
-                })
-            })
-            res.send(push_json)
-        })
     }
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
 
-server.listen(app.get('port'), app.get('ip'), function() {
+server.listen(app.get('port'), app.get('ip'), function () {
     console.log("Corona-js is listening at %s:%d ", app.get('ip'), app.get('port'));
 });
