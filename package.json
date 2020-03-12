@@ -1,23 +1,33 @@
 {
-  "name": "welcomebot-yesi",
-  "version": "1.1.0",
-  "description": "welcomebot",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "corona-api",
+  "version": "3.0.0",
+  "description": "Corona API ",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "capitalize": "^2.0.2",
+    "config": "^3.3.0",
+    "express": "^4.17.1",
+    "get-json": "^1.0.1",
+    "graphql-request": "^1.8.2",
+    "ms": "^2.1.2",
+    "newsapi": "^2.4.0",
+    "request": "^2.88.2",
+    "usa-states": "0.0.5"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/phamleduy04/welcomebot-yesi.git"
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "Duy Pham",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phamleduy04/corona-server.git"
+  },
   "bugs": {
-    "url": "https://github.com/phamleduy04/welcomebot-yesi/issues"
+    "url": "https://github.com/phamleduy04/corona-server/issues"
   },
-  "homepage": "https://github.com/phamleduy04/welcomebot-yesi#readme",
-  "dependencies": {
-    "discord.js": "^12.0.1"
-  },
-  "devDependencies": {}
+  "homepage": "https://github.com/phamleduy04/corona-server#readme"
 }

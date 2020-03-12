@@ -1,7 +1,7 @@
 var http = require('http');
 var bodyParser = require('body-parser');
 var express = require('express');
-const getJSON = require('get-json')
+const getJSON = require('get-json');
 const capitalize = require('capitalize');
 var UsaStates = require('usa-states').UsaStates;
 const url = "https://corona-api.kompa.ai/graphql";
@@ -159,6 +159,40 @@ setInterval(function () {
 }, ms('1m'))
 
 app.get('/cansearch', (req,res) => {
+    var canada_provinces = ["British Columbia","Ontario","Alberta","Quebec","New Brunswick"]
+    var province_name = capitalize.words(req.query.province);
+    if (canada_provinces.indexOf(province_name) > -1){
+        var response = JSON.parse(fs.readFileSync('./data.json', 'utf8'))
+        var province = response.features.filter(m => m.attributes.Country_Region == "Canada" && m.attributes.Province_State == province_name)
+        var province = province[0];
+        var timestamp = new Date(parseInt(province.attributes.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        if (req.query.lang == 'en') {
+            var json_string = `State of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json)
+        } else {
+            var json_string = `Tỉnh bang ${province.attributes.Province_State} hiện tại có ${province.attributes.Confirmed} ca nhiễm, ${province.attributes.Deaths} ca tử vong và ${province.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json) 
+        }
+    } else {
+        if (req.query.lang == 'en') {
+            var json_response = {
+                "messages": [{"text": `You must enter a valid Canadian province name, the list of Canadian provinces being supported is: British Columbia, Ontario, Alberta, Quebec, New Brunswick`}]
+            }
+            res.send(json_response)
+        } else {
+            var json_response = {
+                "messages": [
+                    {"text": "Bạn phải nhập tên hợp lệ tỉnh bang của Canada, list tỉnh bang Canada đang hỗ trợ là: British Columbia, Ontario, Alberta, Quebec, New Brunswick"}]}
+            res.send(json_response)
+        }
+    }
 
 })
 app.get('/ussearch', (req, res) => {
