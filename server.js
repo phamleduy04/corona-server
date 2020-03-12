@@ -158,6 +158,9 @@ setInterval(function () {
     })
 }, ms('1m'))
 
+app.get('/arcgisdata', (req,res) => {
+    res.send(JSON.parse(fs.readFileSync('./data.json', 'utf8')))
+})
 app.get('/cansearch', (req,res) => {
     var canada_provinces = ["British Columbia","Ontario","Alberta","Quebec","New Brunswick"]
     var province_name = capitalize.words(req.query.province);
