@@ -168,7 +168,7 @@ app.get('/cansearch', (req,res) => {
         var timestamp = new Date(parseInt(province.attributes.Last_Update))
         var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
         if (req.query.lang == 'en') {
-            var json_string = `State of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+            var json_string = `Province of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
             var response_json = {
                 "messages": [{ "text": `${json_string}` }]
             }
