@@ -82,7 +82,7 @@ const search = {
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
-    "kr": "\"Korea; South\"",
+    "kr": "Korea, South",
     "kw": "Kuwait",
     "lb": "Lebanon",
     "li": "Liechtenstein",
@@ -147,7 +147,7 @@ var server = http.createServer(app);
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
-setInterval(function () {
+setInterval(function() {
     getJSON(arcgis_url).then(response => {
         if (response.error) return;
         fs.writeFileSync('./data.json', JSON.stringify(response))
@@ -243,8 +243,7 @@ app.get('/coronatry', (req, res) => {
                     ]
                 }
                 res.send(json_response)
-            }
-            else {
+            } else {
                 let json_response = {
                     "messages": [
                         { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
@@ -258,7 +257,7 @@ app.get('/coronatry', (req, res) => {
     }
 })
 
-app.get('/ussearchtry' , (req, res) => {
+app.get('/ussearchtry', (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
     var state_name = capitalize.words(req.query.state);
@@ -408,6 +407,6 @@ app.get('/news', (req, res) => {
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
 
-server.listen(app.get('port'), app.get('ip'), function () {
+server.listen(app.get('port'), app.get('ip'), function() {
     console.log("Corona-js is listening at %s:%d ", app.get('ip'), app.get('port'));
 });
