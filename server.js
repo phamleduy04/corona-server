@@ -392,58 +392,63 @@ app.get('/countrycode', (req, res) => {
 })
 
 app.get('/news', (req, res) => {
-    var push_json = {
-        "messages": [{
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "image_aspect_ratio": "square",
-                    "elements": []
-                }
-            }
-        }]
-    }
-    if (req.query.quocte == 'true') {
-        newsapi.v2.topHeadlines({
-            q: 'coronavirus',
-            pageSize: 10,
-            language: 'en',
-            country: 'ca'
-        }).then(response => {
-            response.articles.forEach(n => {
-                push_json.messages[0].attachment.payload.elements.push({
-                    "title": n.title,
-                    "image_url": n.urlToImage,
-                    "subtitle": `Source: ${n.source.name}`,
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": n.url,
-                        "title": "Go to website"
-                    }]
-                })
-            })
-            res.send(push_json);
-        });
+    if (!req.query.countries || req.query.countries.length !==2){
+         res.send('Invalid');
     } else {
-        graphqlclient.request(news_query).then(result => {
-            result.topTrueNews.forEach(n => {
-                if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
+        const countries = req.query.countries.toLowerCase();
+        var push_json = {
+            "messages": [{
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "image_aspect_ratio": "square",
+                        "elements": []
+                    }
+                }
+            }]
+        }
+        if (countries == 'vn'){
+            graphqlclient.request(news_query).then(result => {
+                result.topTrueNews.forEach(n => {
+                    if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
+                        push_json.messages[0].attachment.payload.elements.push({
+                            "title": n.title,
+                            "image_url": n.picture,
+                            "subtitle": `Nguồn: ${n.siteName}`,
+                            "buttons": [{
+                                "type": "web_url",
+                                "url": n.url,
+                                "title": "Đọc báo"
+                            }]
+                        })
+                    }
+                })
+                res.send(push_json)
+            })
+        } else {
+            newsapi.v2.topHeadlines({
+                q: 'coronavirus',
+                pageSize: 10,
+                language: 'en',
+                country: countries
+            }).then(response => {
+                response.articles.forEach(n => {
                     push_json.messages[0].attachment.payload.elements.push({
                         "title": n.title,
-                        "image_url": n.picture,
-                        "subtitle": `Nguồn: ${n.siteName}`,
+                        "image_url": n.urlToImage,
+                        "subtitle": `Source: ${n.source.name}`,
                         "buttons": [{
                             "type": "web_url",
                             "url": n.url,
-                            "title": "Đọc báo"
+                            "title": "Go to website"
                         }]
                     })
-                }
-            })
-            res.send(push_json)
-        })
-    }
+                })
+                res.send(push_json);
+            });
+        }
+}
 })
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
