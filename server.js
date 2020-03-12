@@ -351,6 +351,7 @@ app.get('/countrycode', (req, res) => {
 })
 
 app.get('/news', (req, res) => {
+    var tukhoa = req.query.countries.toLowerCase()
     var push_json = {
         "messages": [{
             "attachment": {
@@ -363,28 +364,7 @@ app.get('/news', (req, res) => {
             }
         }]
     }
-    if (req.query.quocte == 'true') {
-        newsapi.v2.topHeadlines({
-            q: 'coronavirus',
-            pageSize: 10,
-            language: 'en',
-            country: 'ca'
-        }).then(response => {
-            response.articles.forEach(n => {
-                push_json.messages[0].attachment.payload.elements.push({
-                    "title": n.title,
-                    "image_url": n.urlToImage,
-                    "subtitle": `Source: ${n.source.name}`,
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": n.url,
-                        "title": "Go to website"
-                    }]
-                })
-            })
-            res.send(push_json);
-        });
-    } else {
+    if (search[tukhoa] && tukhoa == 'vn') {
         graphqlclient.request(news_query).then(result => {
             result.topTrueNews.forEach(n => {
                 if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
@@ -399,6 +379,27 @@ app.get('/news', (req, res) => {
                         }]
                     })
                 }
+            })
+            res.send(push_json)
+        })
+    } else if (search[tukhoa]) {
+        newsapi.v2.topHeadlines({
+            q: 'coronavirus',
+            pageSize: 10,
+            language: 'en',
+            country: tukhoa
+        }).then(response => {
+            response.articles.forEach(n => {
+                push_json.messages[0].attachment.payload.elements.push({
+                    "title": n.title,
+                    "image_url": n.urlToImage,
+                    "subtitle": `Source: ${n.source.name}`,
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": n.url,
+                        "title": "Go to website"
+                    }]
+                })
             })
             res.send(push_json)
         })
