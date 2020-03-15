@@ -1,31 +1,31 @@
 {
-    "name": "corona-server-worldometer",
-    "version": "1.0.0",
-    "description": "Changes API",
-    "main": "server.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/phamleduy04/corona-server/tree/worldometers"
-    },
-    "author": "Duy Pham",
-    "license": "MIT",
-    "dependencies": {
-        "axios": "^0.19.2",
-        "body-parser": "^1.19.0",
-        "capitalize": "^2.0.2",
-        "cheerio": "^1.0.0-rc.3",
-        "express": "^4.17.1",
-        "get-json": "^1.0.1",
-        "graphql-request": "^1.8.2",
-        "http": "0.0.0",
-        "ms": "^2.1.2",
-        "newsapi": "^2.4.0",
-        "usa-states": "0.0.5"
-    },
-    "devDependencies": {},
-    "keywords": []
+  "name": "corona-server-worldometer",
+  "version": "3.3.0",
+  "description": "Changes API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phamleduy04/corona-server/tree/worldometers"
+  },
+  "author": "Duy Pham",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "capitalize": "^2.0.2",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "get-json": "^1.0.1",
+    "graphql-request": "^1.8.2",
+    "http": "0.0.0",
+    "ms": "^2.1.2",
+    "newsapi": "^2.4.0",
+    "usa-states": "0.0.5"
+  },
+  "devDependencies": {},
+  "keywords": []
 }

@@ -151,7 +151,7 @@ app.get('/', (req, res) => {
 
 setInterval(async function() { //wordometers
             let NamesArr = []
-            const result = await axios.get("https://www.worldometers.info/coronavirus/");
+            const result = await axios.get(worldometers_url);
             const $ = cheerio.load(result.data);
             $('#main_table_countries').find('tbody').eq(0).find('tr').each((i, el) => {
                 NamesArr.push($(el).find('td').eq(0).text().trim())
@@ -222,6 +222,11 @@ app.get('/cansearch', (req, res) => {
             res.send(json_response)
         }
     }
+})
+
+app.get('/apidata', (req, res) => {
+    var response = JSON.parse(fs.readFileSync('./worldometers.json'))
+    res.send(response)
 })
 
 app.get('/ussearch', (req, res) => {
