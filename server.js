@@ -170,19 +170,27 @@ setInterval(async function() { //wordometers
             Serious_Cases: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(8)`).text().trim() || '0'}`
         })
     })
-    fs.writeFileSync('./worldometers.json',JSON.stringify(json_response))
-    console.log('Đã ghi file worldometers.json')
-}, ms('1m'))
-
-setInterval(function() { //update arcgis_url
-    getJSON(arcgis_url).then(response => {
-        if (response.error) {
-            return console.log('Error!');
-        } else {
-            fs.writeFileSync('./arcgis.json', JSON.stringify(response))
-            console.log('Đã ghi file arcgis.json')
-        }
-    })
+            fs.writeFileSync('./worldometers.json',JSON.stringify(json_response))
+            console.log('Đã ghi file worldometers.json')
+            // Total của worldometers
+            var data = $('.maincounter-number').text().trim()
+            var data = data.replace(/  +/g,' ').split(' ');
+            let total_json = {
+                Global_Cases: data[0],
+                Global_Deaths: data[1],
+                Global_Recovered: data[2]
+            }
+            fs.writeFileSync('./total.json', JSON.stringify(total_json))
+            console.log('Đã ghi file total.json')
+            //arcgis url
+            getJSON(arcgis_url).then(response => {
+                if (response.error) {
+                    return console.log('Error!');
+                } else {
+                    fs.writeFileSync('./arcgis.json', JSON.stringify(response))
+                    console.log('Đã ghi file arcgis.json')
+                }
+            })
 }, ms('1m'))
 
 app.get('/cansearch', (req, res) => {
@@ -303,6 +311,25 @@ app.get('/usstates', (req, res) => {
 })
 app.get('/countrycode', (req, res) => {
     res.redirect('https://www.iban.com/country-codes');
+})
+
+app.get('/global', (req, res) => {
+    var data = JSON.parse(fs.readFileSync('./total.json'))
+    if (req.query.lang == 'en'){
+        let json_response = {
+            "messages": [
+                { "text": `Global currently has ${data.Global_Cases} total cases, ${data.Global_Deaths} deaths cases, ${data.Global_Recovered} recovered cases`},
+            ]
+        }
+        res.send(json_response)
+    } else {
+        let json_response = {
+            "messages": [
+                { "text": `Thế giới hiện tai có ${data.Global_Cases} ca nhiễm, ${data.Global_Deaths} ca tử vong, ${data.Global_Recovered} ca hồi phục.`},
+            ]
+        }
+        res.send(json_response)
+    }
 })
 
 app.get('/coronatry', (req, res) => {
