@@ -80,6 +80,7 @@ const search = {
     "ir": "Iran",
     "is": "Iceland",
     "it": "Italy",
+    "hu": "Hungary",
     "jo": "Jordan",
     "jp": "Japan",
     "kh": "Cambodia",
@@ -235,6 +236,44 @@ app.get('/cansearch', (req, res) => {
 app.get('/apidata', (req, res) => {
     var response = JSON.parse(fs.readFileSync('./worldometers.json'))
     res.send(response)
+})
+app.get('/aussearch', (req, res) => {
+    var ausStateslist = ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Australian Capital Territory', 'Northern Territory']
+    var state_name = capitalize.words(req.query.state)
+    if (ausStateslist.indexOf(state_name) > -1) {
+        var response = JSON.parse(fs.readFileSync('./arcgis.json'))
+        var state = response.features.filter(m => m.attributes.Country_Region == "Australia" && m.attributes.Province_State == state_name)
+        var state = state[0]
+        var timestamp = new Date(parseInt(state.attributes.Last_Update))
+        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+        if (req.query.lang == 'en') {
+            var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json)
+        } else {
+            var json_string = `Bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+            var response_json = {
+                "messages": [{ "text": `${json_string}` }]
+            }
+            res.send(response_json)
+        }
+    } else {
+        if (req.query.lang == 'en') {
+            var json_response = {
+                "messages": [{ "text": `You must enter a valid Australian state name, the list of Australian states supporting is: New South Wales, Victoria, Queensland, Western Australia, South Australia, Tasmania, Australian Capital Territory, Northern Territory`}]
+            }
+            res.send(json_response)
+        } else {
+            var json_response = {
+                "messages": [
+                    { "text": "Bạn phải nhập tên hợp lệ bang của nước Úc, danh sách bang nước Úc đang hỗ trợ là: New South Wales, Victoria, Queensland, Western Australia, South Australia, Tasmania, Australian Capital Territory, Northern Territory" }
+                ]
+            }
+            res.send(json_response)
+        }
+    }
 })
 
 app.get('/ussearch', (req, res) => {
