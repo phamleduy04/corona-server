@@ -147,24 +147,25 @@ var server = http.createServer(app);
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
-setInterval(function () {
+setInterval(function() {
     getJSON(arcgis_url).then(response => {
         if (response.error) {
             return console.log('Error!');
         } else {
-        fs.writeFileSync('./data.json', JSON.stringify(response))
-        console.log('Đã ghi')
+            fs.writeFileSync('./data.json', JSON.stringify(response))
+            console.log('Đã ghi')
         }
     })
 }, ms('1m'))
 
-app.get('/arcgisdata', (req,res) => {
+app.get('/arcgisdata', (req, res) => {
     res.send(JSON.parse(fs.readFileSync('./data.json', 'utf8')))
 })
-app.get('/cansearch', (req,res) => {
-    var canada_provinces = ["British Columbia","Ontario","Alberta","Quebec","New Brunswick"]
+
+app.get('/cansearch', (req, res) => {
+    var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick"]
     var province_name = capitalize.words(req.query.province);
-    if (canada_provinces.indexOf(province_name) > -1){
+    if (canada_provinces.indexOf(province_name) > -1) {
         var response = JSON.parse(fs.readFileSync('./data.json', 'utf8'))
         var province = response.features.filter(m => m.attributes.Country_Region == "Canada" && m.attributes.Province_State == province_name)
         var province = province[0];
@@ -181,23 +182,25 @@ app.get('/cansearch', (req,res) => {
             var response_json = {
                 "messages": [{ "text": `${json_string}` }]
             }
-            res.send(response_json) 
+            res.send(response_json)
         }
     } else {
         if (req.query.lang == 'en') {
             var json_response = {
-                "messages": [{"text": `You must enter a valid Canadian province name, the list of Canadian provinces being supported is: British Columbia, Ontario, Alberta, Quebec, New Brunswick`}]
+                "messages": [{ "text": `You must enter a valid Canadian province name, the list of Canadian provinces being supported is: British Columbia, Ontario, Alberta, Quebec, New Brunswick` }]
             }
             res.send(json_response)
         } else {
             var json_response = {
                 "messages": [
-                    {"text": "Bạn phải nhập tên hợp lệ tỉnh bang của Canada, list tỉnh bang Canada đang hỗ trợ là: British Columbia, Ontario, Alberta, Quebec, New Brunswick"}]}
+                    { "text": "Bạn phải nhập tên hợp lệ tỉnh bang của Canada, list tỉnh bang Canada đang hỗ trợ là: British Columbia, Ontario, Alberta, Quebec, New Brunswick" }
+                ]
+            }
             res.send(json_response)
         }
     }
-
 })
+
 app.get('/ussearch', (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
@@ -239,7 +242,6 @@ app.get('/ussearch', (req, res) => {
         }
     }
 })
-
 
 app.get('/vnfull', (req, res) => {
     if (req.query.lang == 'en') {
@@ -286,8 +288,7 @@ app.get('/coronatry', (req, res) => {
                     ]
                 }
                 res.send(json_response)
-            }
-            else {
+            } else {
                 let json_response = {
                     "messages": [
                         { "text": `${search[tukhoa]} hiện tại có ${json_data.Confirmed} ca nhiễm, ${json_data.Deaths} ca tử vong và ${json_data.Recovered} ca đã hồi phục. \nNgày cập nhật: ${date}` },
@@ -301,7 +302,7 @@ app.get('/coronatry', (req, res) => {
     }
 })
 
-app.get('/ussearchtry' , (req, res) => {
+app.get('/ussearchtry', (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
     var state_name = capitalize.words(req.query.state);
@@ -328,6 +329,38 @@ app.get('/ussearchtry' , (req, res) => {
         res.send('Invalid')
     }
 })
+
+app.get('/global', (req, res) => {
+    var total_confirmed = 0;
+    var total_deaths = 0;
+    var total_recovered = 0;
+    if (req.query.lang == 'en'){
+        graphqlclient.request(query).then(result => {
+            result.countries.forEach(country => {
+                total_confirmed += parseInt(country.Confirmed)
+                total_deaths += parseInt(country.Deaths)
+                total_recovered += parseInt(country.Recovered)
+            })
+        let response_json = {
+            "messages": [{"text": `Global currently has ${total_confirmed} total cases, ${total_deaths} deaths cases, ${total_recovered} recovered cases`}]
+        }
+            res.send(response_json);
+        })
+    } else {
+        graphqlclient.request(query).then(result => {
+            result.countries.forEach(country => {
+                total_confirmed += parseInt(country.Confirmed)
+                total_deaths += parseInt(country.Deaths)
+                total_recovered += parseInt(country.Recovered)
+            })
+        let response_json = {
+            "messages": [{"text": `Thế giới hiện tai có ${total_confirmed} ca nhiễm, ${total_deaths} ca tử vong, ${total_recovered} ca hồi phục.`}]
+        }
+            res.send(response_json);
+        })
+    }
+})
+
 app.get('/corona', (req, res) => {
     if (!req.query.countries || req.query.countries.length !== 2) {
         res.send('Invalid')
@@ -395,8 +428,8 @@ app.get('/countrycode', (req, res) => {
 })
 
 app.get('/news', (req, res) => {
-    if (!req.query.countries || req.query.countries.length !==2){
-         res.send('Invalid');
+    if (!req.query.countries || req.query.countries.length !== 2) {
+        res.send('Invalid');
     } else {
         const countries = req.query.countries.toLowerCase();
         var push_json = {
@@ -411,7 +444,7 @@ app.get('/news', (req, res) => {
                 }
             }]
         }
-        if (countries == 'vn'){
+        if (countries == 'vn') {
             graphqlclient.request(news_query).then(result => {
                 result.topTrueNews.forEach(n => {
                     if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
@@ -451,11 +484,13 @@ app.get('/news', (req, res) => {
                 res.send(push_json);
             });
         }
-}
+    }
 })
+
+
 app.set('port', process.env.PORT || 5000);
 app.set('ip', process.env.IP || "0.0.0.0");
 
-server.listen(app.get('port'), app.get('ip'), function () {
+server.listen(app.get('port'), app.get('ip'), function() {
     console.log("Corona-js is listening at %s:%d ", app.get('ip'), app.get('port'));
 });
