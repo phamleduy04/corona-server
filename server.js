@@ -192,7 +192,7 @@ setInterval(async function() { //wordometers
                     console.log('Đã ghi file arcgis.json')
                 }
             })
-}, ms('1m'))
+}, ms('5s'))
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick"]
@@ -475,7 +475,7 @@ app.get('/news', (req, res) => {
         if (countries == 'vn') {
             graphqlclient.request(news_query).then(result => {
                 result.topTrueNews.forEach(n => {
-                    if (n.title.length > 0 && n.picture.length > 0 && n.siteName.length > 0 && n.url.length > 0) {
+                    if (n.title.length > 0 && n.picture !== null && n.siteName.length > 0 && n.url.length > 0) {
                         push_json.messages[0].attachment.payload.elements.push({
                             "title": n.title,
                             "image_url": n.picture,
