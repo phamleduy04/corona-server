@@ -154,7 +154,7 @@ setInterval(async function() { //wordometers
             let NamesArr = []
             const result = await axios.get(worldometers_url);
             const $ = cheerio.load(result.data);
-            $('#main_table_countries').find('tbody').eq(0).find('tr').each((i, el) => {
+            $('#main_table_countries_today').find('tbody').eq(0).find('tr').each((i, el) => {
                 NamesArr.push($(el).find('td').eq(0).text().trim())
             })
 
@@ -162,13 +162,13 @@ setInterval(async function() { //wordometers
             NamesArr.forEach(country => {
                         let Index = NamesArr.indexOf(country) + 1
                         json_response.push({
-                                    Country_Name: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(1)`).text().trim() || '0'}`,
-            Total_Cases: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(2)`).text().trim() || '+0'}`,
-            New_Cases: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(3)`).text().trim() || '0'}`,
-            Total_Deaths: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(4)`).text().trim() || '0'}`,
-            New_Deaths: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(5)`).text().trim() || '+0'}`,
-            Total_Recovered: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`,
-            Serious_Cases: `${$(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(8)`).text().trim() || '0'}`
+                                    Country_Name: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(1)`).text().trim() || '0'}`,
+            Total_Cases: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(2)`).text().trim() || '+0'}`,
+            New_Cases: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(3)`).text().trim() || '0'}`,
+            Total_Deaths: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(4)`).text().trim() || '0'}`,
+            New_Deaths: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(5)`).text().trim() || '+0'}`,
+            Total_Recovered: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`,
+            Serious_Cases: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(8)`).text().trim() || '0'}`
         })
     })
             fs.writeFileSync('./worldometers.json',JSON.stringify(json_response))
