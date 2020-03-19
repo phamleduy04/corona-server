@@ -175,7 +175,8 @@ setInterval(async function() { //wordometers
             console.log('Đã ghi file worldometers.json')
             // Total của worldometers
             var data = $('.maincounter-number').text().trim()
-            var data = data.replace(/  +/g,' ').split(' ');
+            var data = data.replace(/\s\s+/g, ' ').split(' ');
+            console.log(data)
             let total_json = {
                 Global_Cases: data[0],
                 Global_Deaths: data[1],
@@ -192,7 +193,7 @@ setInterval(async function() { //wordometers
                     console.log('Đã ghi file arcgis.json')
                 }
             })
-}, ms('5s'))
+}, ms('1m'))
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick"]
