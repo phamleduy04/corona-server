@@ -214,11 +214,11 @@ setInterval(async function() { //wordometers
             })
             })
             fs.writeFileSync('./us.json', JSON.stringify(us_state_json))
-            console.log('Done writing to us.json')
+            console.log('Đã ghi file us.json')
 }, ms('1m'))
 
 app.get('/cansearch', (req, res) => {
-    var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick"]
+    var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
     var province_name = capitalize.words(req.query.province);
     if (canada_provinces.indexOf(province_name) > -1) {
         var response = JSON.parse(fs.readFileSync('./arcgis.json', 'utf8'))
@@ -229,13 +229,15 @@ app.get('/cansearch', (req, res) => {
         if (req.query.lang == 'en') {
             var json_string = `Province of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_ca_en"]
             }
             res.send(response_json)
         } else {
             var json_string = `Tỉnh bang ${province.attributes.Province_State} hiện tại có ${province.attributes.Confirmed} ca nhiễm, ${province.attributes.Deaths} ca tử vong và ${province.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_ca_vn"]
             }
             res.send(response_json)
         }
@@ -272,13 +274,15 @@ app.get('/aussearch', (req, res) => {
         if (req.query.lang == 'en') {
             var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_au_en"]
             }
             res.send(response_json)
         } else {
             var json_string = `Bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_au_vn"]
             }
             res.send(response_json)
         }
@@ -310,13 +314,15 @@ app.get('/ussearch', (req, res) => {
         if(req.query.lang == 'en'){
             var json_string = `State of ${state.State_Name} currently has ${state.Total_Cases}(${state.New_Cases}) confirmed cases, ${state.Total_Deaths}(${state.New_Deaths}) deaths cases and ${state.Total_Recovered} recovered cases.`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_us_en"]
             }
             res.send(response_json)
         } else {
             var json_string = `Tiểu bang ${state.State_Name} hiện tại có ${state.Total_Cases}(${state.New_Cases}) ca nhiễm, ${state.Total_Deaths}(${state.New_Deaths}) ca tử vong và ${state.Total_Recovered} ca hồi phục.`
             var response_json = {
-                "messages": [{ "text": `${json_string}` }]
+                "messages": [{ "text": `${json_string}` }],
+                "redirect_to_blocks":["cont_us_vn"]
             }
             res.send(response_json)
         }
@@ -405,14 +411,16 @@ app.get('/coronatry', (req, res) => {
             let json_response = {
                 "messages": [
                     { "text": `${json_data.Country_Name} currently has ${json_data.Total_Cases}(${json_data.New_Cases}) total cases, ${json_data.Serious_Cases} serious case, ${json_data.Total_Deaths}(${json_data.New_Deaths}) death cases and ${json_data.Total_Recovered} recoveries cases.`},
-                ]
+                ],
+                "redirect_to_blocks": [`ask_${tukhoa}_en`]
             }
             res.send(json_response)
         } else {
             let json_response = {
                 "messages": [
                     { "text": `${json_data.Country_Name} hiện tại có ${json_data.Total_Cases}(${json_data.New_Cases}) ca nhiễm, ${json_data.Serious_Cases} ca nghiêm trọng, ${json_data.Total_Deaths}(${json_data.New_Deaths}) ca tử vong và ${json_data.Total_Recovered} ca đã hồi phục.`},
-                ]
+                ],
+                "redirect_to_blocks": [`ask_${tukhoa}_vn`]
             }
             res.send(json_response)
         }
@@ -433,14 +441,16 @@ app.get('/corona', (req, res) => {
                 let json_response = {
                     "messages": [
                         { "text": `${json_data.Country_Name} currently has ${json_data.Total_Cases}(${json_data.New_Cases}) total cases, ${json_data.Serious_Cases} serious case, ${json_data.Total_Deaths}(${json_data.New_Deaths}) death cases and ${json_data.Total_Recovered} recoveries cases.`},
-                    ]
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_en`]
                 }
                 res.send(json_response)
             } else {
                 let json_response = {
                     "messages": [
                         { "text": `${json_data.Country_Name} hiện tại có ${json_data.Total_Cases}(${json_data.New_Cases}) ca nhiễm, ${json_data.Serious_Cases} ca nghiêm trọng, ${json_data.Total_Deaths}(${json_data.New_Deaths}) ca tử vong và ${json_data.Total_Recovered} ca đã hồi phục.`},
-                    ]
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_vn`]
                 }
                 res.send(json_response)
             }
