@@ -7,6 +7,7 @@ var UsaStates = require('usa-states').UsaStates;
 const url = "https://corona-api.kompa.ai/graphql";
 const arcgis_url = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=1=1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&outSR=102100&resultOffset=0&resultRe%20cordCount=160&cacheHint=true'
 const worldometers_url = 'https://www.worldometers.info/coronavirus/'
+const us_state_url = 'https://www.worldometers.info/coronavirus/country/us/'
 const graphql = require("graphql-request");
 const NewsAPI = require('newsapi');
 const { news_api_key } = require('./config.json')
@@ -151,16 +152,16 @@ app.get('/', (req, res) => {
 });
 
 setInterval(async function() { //wordometers
-            let NamesArr = []
+            let Countries = []
             const result = await axios.get(worldometers_url);
-            const $ = cheerio.load(result.data);
+            let $ = cheerio.load(result.data);
             $('#main_table_countries_today').find('tbody').eq(0).find('tr').each((i, el) => {
-                NamesArr.push($(el).find('td').eq(0).text().trim())
+                Countries.push($(el).find('td').eq(0).text().trim())
             })
 
             const json_response = []
-            NamesArr.forEach(country => {
-                        let Index = NamesArr.indexOf(country) + 1
+            Countries.forEach(country => {
+                        let Index = Countries.indexOf(country) + 1
                         json_response.push({
                                     Country_Name: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(1)`).text().trim() || '0'}`,
             Total_Cases: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(2)`).text().trim() || '+0'}`,
@@ -176,7 +177,6 @@ setInterval(async function() { //wordometers
             // Total của worldometers
             var data = $('.maincounter-number').text().trim()
             var data = data.replace(/\s\s+/g, ' ').split(' ');
-            console.log(data)
             let total_json = {
                 Global_Cases: data[0],
                 Global_Deaths: data[1],
@@ -193,6 +193,28 @@ setInterval(async function() { //wordometers
                     console.log('Đã ghi file arcgis.json')
                 }
             })
+            //us state
+            let US_STATE = []
+            const usstateresult = await axios.get(us_state_url);
+            let $state = cheerio.load(usstateresult.data);
+            $state('#usa_table_countries_today').find('tbody').eq(0).find('tr').each((i, el) => {
+                US_STATE.push($state(el).find('td').eq(0).text().trim())
+            })
+        
+            let us_state_json = []
+                    US_STATE.forEach(state => {
+                        let Index = US_STATE.indexOf(state) + 1
+                        us_state_json.push({
+                            State_Name: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(1)`).text().trim() || '0'}`,
+            Total_Cases: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(2)`).text().trim() || '+0'}`,
+            New_Cases: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(3)`).text().trim() || '0'}`,
+            Total_Deaths: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(4)`).text().trim() || '0'}`,
+            New_Deaths: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(5)`).text().trim() || '+0'}`,
+            Total_Recovered: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`
+            })
+            })
+            fs.writeFileSync('./us.json', JSON.stringify(us_state_json))
+            console.log('Done writing to us.json')
 }, ms('1m'))
 
 app.get('/cansearch', (req, res) => {
@@ -282,19 +304,17 @@ app.get('/ussearch', (req, res) => {
     var statesNameslist = usStates.arrayOf('names');
     var state_name = capitalize.words(req.query.state);
     if (statesNameslist.indexOf(state_name) > -1) {
-        var response = JSON.parse(fs.readFileSync('./arcgis.json', 'utf8'))
-        var state = response.features.filter(m => m.attributes.Country_Region == "US" && m.attributes.Province_State == state_name)
+        var response = JSON.parse(fs.readFileSync('./us.json'))
+        var state = response.filter(state => state.State_Name == state_name)
         var state = state[0]
-        var timestamp = new Date(parseInt(state.attributes.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        if (req.query.lang == 'en') {
-            var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+        if(req.query.lang == 'en'){
+            var json_string = `State of ${state.State_Name} currently has ${state.Total_Cases}(${state.New_Cases}) confirmed cases, ${state.Total_Deaths}(${state.New_Deaths}) deaths cases and ${state.Total_Recovered} recovered cases.`
             var response_json = {
                 "messages": [{ "text": `${json_string}` }]
             }
             res.send(response_json)
-        } else { //another lang
-            var json_string = `Tiểu bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+        } else {
+            var json_string = `Tiểu bang ${state.State_Name} hiện tại có ${state.Total_Cases}(${state.New_Cases}) ca nhiễm, ${state.Total_Deaths}(${state.New_Deaths}) ca tử vong và ${state.Total_Recovered} ca hồi phục.`
             var response_json = {
                 "messages": [{ "text": `${json_string}` }]
             }
@@ -304,14 +324,14 @@ app.get('/ussearch', (req, res) => {
         if (req.query.lang == 'en') {
             var json_response = {
                 "messages": [
-                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a valid state name. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "You must enter a valid state name. Click on the button below for reference.", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/usstates", "title": "Click here!" }] } } }
                 ]
             }
             res.send(json_response)
         } else {
             var json_response = {
                 "messages": [
-                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập tên hợp lệ của tiểu bang Hoa Kì. Click vào nút dưới đây để tham khảo ", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/countrycode", "title": "Click here!" }] } } }
+                    { "attachment": { "type": "template", "payload": { "template_type": "button", "text": "Bạn phải nhập tên hợp lệ của tiểu bang Hoa Kì. Click vào nút dưới đây để tham khảo ", "buttons": [{ "type": "web_url", "url": "https://corona-js.herokuapp.com/usstates", "title": "Click here!" }] } } }
                 ]
             }
             res.send(json_response)
