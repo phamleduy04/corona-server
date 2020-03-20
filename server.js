@@ -218,7 +218,7 @@ setInterval(async function() { //wordometers
 }, ms('1m'))
 
 app.get('/cansearch', (req, res) => {
-    var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick"]
+    var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
     var province_name = capitalize.words(req.query.province);
     if (canada_provinces.indexOf(province_name) > -1) {
         var response = JSON.parse(fs.readFileSync('./arcgis.json', 'utf8'))
