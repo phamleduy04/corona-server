@@ -142,13 +142,9 @@ const graphqlclient = new graphql.GraphQLClient(url, {
 })
 
 var app = express();
-app.use((req, res) => {
-    bodyParser.urlencoded({
-        extended: false
-})
-    res.header('Access-Control-Allow-Origin', '*');
-
-})
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
     
 var server = http.createServer(app);
 
