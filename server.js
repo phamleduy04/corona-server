@@ -16,7 +16,6 @@ const ms = require('ms')
 const fs = require('fs')
 const axios = require("axios");
 const cheerio = require("cheerio");
-const JSAlert = require("js-alert");
 const query = `query countries {
     countries {
         Country_Region
@@ -387,17 +386,12 @@ app.get('/countrycode', (req, res) => {
 app.get('/global', (req, res) => {
     var data = JSON.parse(fs.readFileSync('./total.json'))
     if (req.query.lang == 'en'){
-        var text_res = `Global currently has ${data.Global_Cases} total cases, ${data.Global_Deaths} deaths cases, ${data.Global_Recovered} recovered cases`
-        if (req.query.alert == 'true'){
-            res.send(JSAlert.alert("test"))
-        } else {
         let json_response = {
             "messages": [
-                { "text": text_res},
+                { "text": `Global currently has ${data.Global_Cases} total cases, ${data.Global_Deaths} deaths cases, ${data.Global_Recovered} recovered cases`},
             ]
         }
         res.send(json_response)
-        }
     } else {
         let json_response = {
             "messages": [
