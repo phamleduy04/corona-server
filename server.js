@@ -97,6 +97,7 @@ const search = {
     "ma": "Morocco",
     "mc": "Monaco",
     "mk": "North Macedonia",
+    "mm": "Myanmar",
     "mx": "Mexico",
     "my": "Malaysia",
     "ng": "Nigeria",
