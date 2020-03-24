@@ -119,6 +119,8 @@ const search = {
     "sn": "Senegal",
     "th": "Thailand",
     "tn": "Tunisia",
+    "la": "Laos",
+    "fl": "Finland",
     "tw": "Taiwan",
     "ua": "Ukraine",
     "us": "USA",
