@@ -1,6 +1,6 @@
 {
   "name": "corona-server-worldometer",
-  "version": "3.6.3",
+  "version": "3.8.0",
   "description": "Changes API",
   "main": "server.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "get-json": "^1.0.1",
     "graphql-request": "^1.8.2",
     "http": "0.0.0",
+    "js-alert": "^1.0.4",
     "ms": "^2.1.2",
     "newsapi": "^2.4.0",
     "usa-states": "0.0.5"

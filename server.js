@@ -145,6 +145,12 @@ var app = express();
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+  });
+
 var server = http.createServer(app);
 
 app.get('/', (req, res) => {
@@ -378,7 +384,6 @@ app.get('/usstates', (req, res) => {
 app.get('/countrycode', (req, res) => {
     res.redirect('https://www.iban.com/country-codes');
 })
-
 app.get('/global', (req, res) => {
     var data = JSON.parse(fs.readFileSync('./total.json'))
     if (req.query.lang == 'en'){
