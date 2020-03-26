@@ -221,9 +221,10 @@ setInterval(async function() { //wordometers
             New_Cases: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(3)`).text().trim() || '0'}`,
             Total_Deaths: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(4)`).text().trim() || '0'}`,
             New_Deaths: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(5)`).text().trim() || '+0'}`,
-            Total_Recovered: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`
+            Total_Recovered: `N/A`
             })
             })
+            //Total_Recovered: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`
             fs.writeFileSync('./us.json', JSON.stringify(us_state_json))
             console.log('Đã ghi file us.json')
 }, ms('1m'))
@@ -319,18 +320,18 @@ app.get('/ussearch', (req, res) => {
     var statesNameslist = usStates.arrayOf('names');
     var state_name = capitalize.words(req.query.state);
     if (statesNameslist.indexOf(state_name) > -1) {
-        var response = JSON.parse(fs.readFileSync('./arcgis.json'))
-        var state = response.features.filter(state => state.attributes.Country_Region == 'US' && state.attributes.Province_State == state_name)
+        var response = JSON.parse(fs.readFileSync('./us.json'))
+        var state = response.filter(state => state.State_Name == state_name)
         var state = state[0]
         if(req.query.lang == 'en'){
-            var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases.`
+            var json_string = `State of ${state.State_Name} currently has ${state.Total_Cases}(${state.New_Cases}) confirmed cases, ${state.Total_Deaths}(${state.New_Deaths}) deaths cases and ${state.Total_Recovered} recovered cases.`
             var response_json = {
                 "messages": [{ "text": `${json_string}` }],
                 "redirect_to_blocks":["cont_us_en"]
             }
             res.send(response_json)
         } else {
-            var json_string = `Tiểu bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục.`
+            var json_string = `Tiểu bang ${state.State_Name} hiện tại có ${state.Total_Cases}(${state.New_Cases}) ca nhiễm, ${state.Total_Deaths}(${state.New_Deaths}) ca tử vong và ${state.Total_Recovered} ca hồi phục.`
             var response_json = {
                 "messages": [{ "text": `${json_string}` }],
                 "redirect_to_blocks":["cont_us_vn"]
