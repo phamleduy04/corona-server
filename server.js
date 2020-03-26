@@ -50,6 +50,7 @@ const search = {
     "au": "Australia",
     "az": "Azerbaijan",
     "be": "Belgium",
+    "bg": "Bulgaria",
     "bh": "Bahrain",
     "br": "Brazil",
     "by": "Belarus",
@@ -225,7 +226,7 @@ setInterval(async function() { //wordometers
             })
             fs.writeFileSync('./us.json', JSON.stringify(us_state_json))
             console.log('Đã ghi file us.json')
-}, ms('1m'))
+}, ms('5s'))
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
