@@ -328,13 +328,13 @@ app.get('/usprovince', (req, res) => {
         var data_ = data_[0]
         if (lang == 'en'){
             let response_json = {
-                "messages": [{ "text": `Province of ${data_.Province_Name} currently has ${data_.Confirmed}(+${data_.New_Confirmed}) confirmed cases, ${data_.Deaths}(${data_.New_Deaths}) deaths cases and N/A recovered cases.` }],
+                "messages": [{ "text": `Province of ${data_.Province_Name} currently has ${data_.Confirmed}(+${data_.New_Confirmed}) confirmed cases, ${data_.Deaths}(+${data_.New_Deaths}) deaths cases and N/A recovered cases.` }],
                 "redirect_to_blocks":["cont_province_us_en"]
             }
             res.send(response_json)
         } else {
             let response_json = {
-                "messages": [{ "text": `Quận ${data_.Province_Name} hiện tại có ${data_.Confirmed}(+${data_.New_Confirmed}) ca nhiễm, ${data_.Deaths}(${data_.New_Deaths}) ca tử vong và N/A ca hồi phục.` }],
+                "messages": [{ "text": `Quận ${data_.Province_Name} hiện tại có ${data_.Confirmed}(+${data_.New_Confirmed}) ca nhiễm, ${data_.Deaths}(+${data_.New_Deaths}) ca tử vong và N/A ca hồi phục.` }],
                 "redirect_to_blocks":["cont_province_us_vn"]
             } 
             res.send(response_json)
@@ -453,6 +453,10 @@ app.get('/vnfull', (req, res) => {
             res.send(response)
         })
     }
+})
+
+app.get('/usprovincewiki', (req, res) => {
+    res.redirect('https://en.wikipedia.org/wiki/List_of_United_States_counties_and_county_equivalents')
 })
 app.get('/usstates', (req, res) => {
     res.redirect('https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#States')
