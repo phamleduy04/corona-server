@@ -10,10 +10,13 @@ const worldometers_url = 'https://www.worldometers.info/coronavirus/'
 const us_state_url = 'https://www.worldometers.info/coronavirus/country/us/'
 const graphql = require("graphql-request");
 const NewsAPI = require('newsapi');
-const { news_api_key } = require('./config.json')
+const { news_api_key } = require('./config.json');
+const newsbreak_url = 'https://www.newsbreak.com/topics/coronavirus'
 const newsapi = new NewsAPI(news_api_key);
-const ms = require('ms')
-const fs = require('fs')
+const ms = require('ms');
+const stringsimilarity = require('string-similarity');
+const fs = require('fs');
+var usprovincelist = fs.readFileSync('./listprovince.txt', 'utf8').split(',')
 const axios = require("axios");
 const cheerio = require("cheerio");
 const query = `query countries {
@@ -163,6 +166,7 @@ app.get('/', (req, res) => {
 });
 
 setInterval(async function() { //wordometers
+            console.time('worldometer')
             let Countries = []
             const result = await axios.get(worldometers_url);
             let $ = cheerio.load(result.data);
@@ -181,11 +185,13 @@ setInterval(async function() { //wordometers
             New_Deaths: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(5)`).text().trim() || '+0'}`,
             Total_Recovered: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`,
             Serious_Cases: `${$(`#main_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(8)`).text().trim() || '0'}`
+            })
         })
-    })
             fs.writeFileSync('./worldometers.json',JSON.stringify(json_response))
-            console.log('Đã ghi file worldometers.json')
+            await console.log('Đã ghi file worldometers.json')
+            console.timeEnd('worldometer')
             // Total của worldometers
+            console.time('worldometer-total')
             var data = $('.maincounter-number').text().trim()
             var data = data.replace(/\s\s+/g, ' ').split(' ');
             let total_json = {
@@ -194,17 +200,21 @@ setInterval(async function() { //wordometers
                 Global_Recovered: data[2]
             }
             fs.writeFileSync('./total.json', JSON.stringify(total_json))
-            console.log('Đã ghi file total.json')
+            await console.log('Đã ghi file total.json')
+            console.timeEnd('worldometer-total')
             //arcgis url
-            getJSON(arcgis_url).then(response => {
+            console.time('arcgis')
+            getJSON(arcgis_url).then(async response => {
                 if (response.error) {
                     return console.log('Error!');
                 } else {
                     fs.writeFileSync('./arcgis.json', JSON.stringify(response))
-                    console.log('Đã ghi file arcgis.json')
+                    await console.log('Đã ghi file arcgis.json')
                 }
             })
+            console.timeEnd('arcgis')
             //us state
+            console.time('worldometer-usstate')
             let US_STATE = []
             const usstateresult = await axios.get(us_state_url);
             let $state = cheerio.load(usstateresult.data);
@@ -227,7 +237,38 @@ setInterval(async function() { //wordometers
             //Total_Recovered: `${$state(`#usa_table_countries_today > tbody:nth-child(2) > tr:nth-child(${Index}) > td:nth-child(6)`).text().trim() || '0'}`
             fs.writeFileSync('./us.json', JSON.stringify(us_state_json))
             console.log('Đã ghi file us.json')
-}, ms('1m'))
+            console.timeEnd('worldometer-usstate')
+}, ms('5m'))
+async function newsbreak() {
+    console.time('newsbreak');
+    let us_full_json = []
+    const result = await axios.get(newsbreak_url)
+    let $ = cheerio.load(result.data)
+    var i_max =  $('.state-table').find('tbody').eq(0).find('span').length
+    for (i = 1; i < i_max; i++){
+        var confirmed_arr = $(`.state-table > tbody > tr:nth-child(${i}) > td:nth-child(2)`).text().trim().split('+')
+        var death_arr = $(`.state-table > tbody > tr:nth-child(${i}) > td:nth-child(3)`).text().trim().split('+')
+        var name = $(`.state-table > tbody > tr:nth-child(${i})`).find('span').text().trim()
+        var confirmed = confirmed_arr[0];
+        var new_confirmed = confirmed_arr[1] || 0;
+        var deaths = death_arr[0];
+        var new_deaths = death_arr[1] || 0;
+        if (!name) continue;
+        if (name.startsWith('▸')) continue;
+        us_full_json.push({
+            Province_Name: `${name}`,
+            Confirmed: `${confirmed}`,
+            New_Confirmed: `${new_confirmed}`,
+            Deaths: `${deaths}`,
+            New_Deaths: `${new_deaths}`
+        })
+        console.log(name)
+    }
+    fs.writeFileSync('./usprovince.json', JSON.stringify(us_full_json))
+    console.log('Done writing data to usprovince.json')
+    console.timeEnd('newsbreak')
+}
+setInterval(newsbreak, ms('30m')) //news break (getdata avg time: 154823.547ms ~ 2.5 min)
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
@@ -274,6 +315,35 @@ app.get('/apidata', (req, res) => {
     var response = JSON.parse(fs.readFileSync('./worldometers.json'))
     res.send(response)
 })
+
+app.get('/usprovince', (req, res) => {
+    var input = req.query.province;
+    var lang = req.query.lang;
+    if (!input || !lang) return res.send('Invalid')
+    var province_name = capitalize.words(input)
+    var data = JSON.parse(fs.readFileSync('./usprovince.json'))
+    var ans = stringsimilarity.findBestMatch(province_name, usprovincelist)
+    if (ans.bestMatch.rating > 0.6){
+        var data_ = data.filter(data => data.Province_Name == ans.bestMatch.target)
+        var data_ = data_[0]
+        if (lang == 'en'){
+            let response_json = {
+                "messages": [{ "text": `Province of ${data_.Province_Name} currently has ${data_.Confirmed}(+${data_.New_Confirmed}) confirmed cases, ${data_.Deaths}(${data_.New_Deaths}) deaths cases and N/A recovered cases.` }],
+                "redirect_to_blocks":["cont_province_us_en"]
+            }
+            res.send(response_json)
+        } else {
+            let response_json = {
+                "messages": [{ "text": `Quận ${data_.Province_Name} hiện tại có ${data_.Confirmed}(+${data_.New_Confirmed}) ca nhiễm, ${data_.Deaths}(${data_.New_Deaths}) ca tử vong và N/A ca hồi phục.` }],
+                "redirect_to_blocks":["cont_province_us_vn"]
+            } 
+            res.send(response_json)
+        }
+    } else {
+        res.send('Invalid')
+    }
+})
+
 app.get('/aussearch', (req, res) => {
     var ausStateslist = ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Australian Capital Territory', 'Northern Territory']
     var state_name = capitalize.words(req.query.state)
