@@ -5,13 +5,13 @@ const getJSON = require('get-json');
 const capitalize = require('capitalize');
 const UsaStates = require('usa-states').UsaStates;
 const NewsAPI = require('newsapi');
-const newsapi = new NewsAPI(news_api_key);
 const ms = require('ms');
 const stringsimilarity = require('string-similarity');
 const fs = require('fs');
 //đọc file
 const usprovincelist = fs.readFileSync('./data/listprovince.txt', 'utf8').split(',')
 const { news_api_key } = require('./config.json');
+const newsapi = new NewsAPI(news_api_key);
 //url list
 const arcgis_url = 'https://viruscoronaapi.herokuapp.com/arcgis'
 const kompa_news_url = 'https://viruscoronaapi.herokuapp.com/kompa?data=news'
