@@ -9,8 +9,22 @@ const ms = require('ms');
 const stringsimilarity = require('string-similarity');
 const fs = require('fs');
 //đọc file
-const usprovincelist = fs.readFileSync('./data/listprovince.txt', 'utf8').split(',')
+const usprovincelist = fs.readFileSync('./data/listprovince.txt', 'utf8').split(',');
+const countrieslist = fs.readFileSync('./data/countries.txt', 'utf8').split(',');
 const { news_api_key } = require('./config.json');
+const country_array = require('./data/country_array.json');
+function countryarrayfilp() {
+// dịch ngược file country_array
+    let res = {}
+    for (var key in country_array){
+        res[country_array[key]] = key;
+    }
+    fs.writeFileSync('./data/country_array_flipped.json', JSON.stringify(res))
+    console.log('Đã ghi file country_array_filpped.json')
+}
+countryarrayfilp();
+const country_array_flipped = require('./data/country_array_flipped.json')
+
 const newsapi = new NewsAPI(news_api_key);
 //url list
 const arcgis_url = 'https://viruscoronaapi.herokuapp.com/arcgis'
@@ -20,7 +34,7 @@ const worldometers_url = 'https://viruscoronaapi.herokuapp.com/worldometers'
 const worldometers_total_url = 'https://viruscoronaapi.herokuapp.com/worldometers?data=total'
 const worldometers_usstate_url = 'https://viruscoronaapi.herokuapp.com/worldometers?data=usstate'
 const newsbreak_url = 'https://viruscoronaapi.herokuapp.com/breaknews'
-const country_array = require('./data/country_array.json')
+
 
 var app = express();
 app.use(bodyParser.urlencoded({
@@ -89,42 +103,29 @@ setInterval(async function() {
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
-    var province_name = capitalize.words(req.query.province);
-    if (canada_provinces.indexOf(province_name) > -1) {
-        var response = JSON.parse(fs.readFileSync('./data/arcgis.json', 'utf8'))
-        var province = response.features.filter(m => m.attributes.Country_Region == "Canada" && m.attributes.Province_State == province_name)
-        var province = province[0];
-        var timestamp = new Date(parseInt(province.attributes.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        if (req.query.lang == 'en') {
-            var json_string = `Province of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
-            var response_json = {
-                "messages": [{ "text": `${json_string}` }],
-                "redirect_to_blocks":["cont_ca_en"]
-            }
-            res.send(response_json)
-        } else {
-            var json_string = `Tỉnh bang ${province.attributes.Province_State} hiện tại có ${province.attributes.Confirmed} ca nhiễm, ${province.attributes.Deaths} ca tử vong và ${province.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
-            var response_json = {
-                "messages": [{ "text": `${json_string}` }],
-                "redirect_to_blocks":["cont_ca_vn"]
-            }
-            res.send(response_json)
+    let province_name_req = req.query.province
+    if (!province_name_req) return res.send('Invalid')
+    var province_name = capitalize.words(province_name_req);
+    var matches = stringsimilarity.findBestMatch(province_name, canada_provinces)
+    var response = JSON.parse(fs.readFileSync('./data/arcgis.json', 'utf8'))
+    var province = response.features.filter(m => m.attributes.Country_Region == "Canada" && m.attributes.Province_State == matches.bestMatch.target)
+    var province = province[0];
+    var timestamp = new Date(parseInt(province.attributes.Last_Update))
+    var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+    if (req.query.lang == 'en') {
+        var json_string = `Province of ${province.attributes.Province_State} currently has ${province.attributes.Confirmed} confirmed cases, ${province.attributes.Deaths} deaths cases and ${province.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+        var response_json = {
+            "messages": [{ "text": `${json_string}` }],
+            "redirect_to_blocks":["cont_ca_en"]
         }
+        res.send(response_json)
     } else {
-        if (req.query.lang == 'en') {
-            var json_response = {
-                "messages": [{ "text": `You must enter a valid Canadian province name, the list of Canadian provinces being supported is: British Columbia, Ontario, Alberta, Quebec, New Brunswick` }]
-            }
-            res.send(json_response)
-        } else {
-            var json_response = {
-                "messages": [
-                    { "text": "Bạn phải nhập tên hợp lệ tỉnh bang của Canada, list tỉnh bang Canada đang hỗ trợ là: British Columbia, Ontario, Alberta, Quebec, New Brunswick" }
-                ]
-            }
-            res.send(json_response)
+        var json_string = `Tỉnh bang ${province.attributes.Province_State} hiện tại có ${province.attributes.Confirmed} ca nhiễm, ${province.attributes.Deaths} ca tử vong và ${province.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+        var response_json = {
+            "messages": [{ "text": `${json_string}` }],
+            "redirect_to_blocks":["cont_ca_vn"]
         }
+        res.send(response_json)
     }
 })
 
@@ -175,52 +176,42 @@ app.get('/usprovince', (req, res) => {
 
 app.get('/aussearch', (req, res) => {
     var ausStateslist = ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Australian Capital Territory', 'Northern Territory']
-    var state_name = capitalize.words(req.query.state)
-    if (ausStateslist.indexOf(state_name) > -1) {
-        var response = JSON.parse(fs.readFileSync('./data/arcgis.json'))
-        var state = response.features.filter(m => m.attributes.Country_Region == "Australia" && m.attributes.Province_State == state_name)
-        var state = state[0]
-        var timestamp = new Date(parseInt(state.attributes.Last_Update))
-        var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
-        if (req.query.lang == 'en') {
-            var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
-            var response_json = {
-                "messages": [{ "text": `${json_string}` }],
-                "redirect_to_blocks":["cont_au_en"]
-            }
-            res.send(response_json)
-        } else {
-            var json_string = `Bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
-            var response_json = {
-                "messages": [{ "text": `${json_string}` }],
-                "redirect_to_blocks":["cont_au_vn"]
-            }
-            res.send(response_json)
+    let state_name_req = req.query.state
+    if (!state_name_req) return res.send('Invalid')
+    var state_name = capitalize.words(state_name_req)
+    var matches = stringsimilarity.findBestMatch(state_name, ausStateslist)
+    var response = JSON.parse(fs.readFileSync('./data/arcgis.json'))
+    var state = response.features.filter(m => m.attributes.Country_Region == "Australia" && m.attributes.Province_State == matches.bestMatch.target)
+    var state = state[0]
+    var timestamp = new Date(parseInt(state.attributes.Last_Update))
+    var date = timestamp.getDate() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getFullYear()
+    if (req.query.lang == 'en') {
+        var json_string = `State of ${state.attributes.Province_State} currently has ${state.attributes.Confirmed} confirmed cases, ${state.attributes.Deaths} deaths cases and ${state.attributes.Recovered} recovered cases. \nUpdated date: ${date}`
+        var response_json = {
+            "messages": [{ "text": `${json_string}` }],
+            "redirect_to_blocks":["cont_au_en"]
         }
+        res.send(response_json)
     } else {
-        if (req.query.lang == 'en') {
-            var json_response = {
-                "messages": [{ "text": `You must enter a valid Australian state name, the list of Australian states supporting is: New South Wales, Victoria, Queensland, Western Australia, South Australia, Tasmania, Australian Capital Territory, Northern Territory`}]
-            }
-            res.send(json_response)
-        } else {
-            var json_response = {
-                "messages": [
-                    { "text": "Bạn phải nhập tên hợp lệ bang của nước Úc, danh sách bang nước Úc đang hỗ trợ là: New South Wales, Victoria, Queensland, Western Australia, South Australia, Tasmania, Australian Capital Territory, Northern Territory" }
-                ]
-            }
-            res.send(json_response)
+        var json_string = `Bang ${state.attributes.Province_State} hiện tại có ${state.attributes.Confirmed} ca nhiễm, ${state.attributes.Deaths} ca tử vong và ${state.attributes.Recovered} ca hồi phục. \nNgày cập nhật: ${date}`
+        var response_json = {
+            "messages": [{ "text": `${json_string}` }],
+            "redirect_to_blocks":["cont_au_vn"]
         }
+        res.send(response_json)
     }
 })
 
 app.get('/ussearch', (req, res) => {
     var usStates = new UsaStates();
     var statesNameslist = usStates.arrayOf('names');
+    let state_name_req = req.query.state
+    if (!state_name_req) return res.send('Invalid')
     var state_name = capitalize.words(req.query.state);
-    if (statesNameslist.indexOf(state_name) > -1) {
+    var matches = stringsimilarity.findBestMatch(state_name, statesNameslist)
+    if (matches.bestMatch.rating >= 0.4) {
         var response = JSON.parse(fs.readFileSync('./data/us.json'))
-        var state = response.filter(state => state.State_Name == state_name)
+        var state = response.filter(state => state.State_Name == matches.bestMatch.target)
         var state = state[0]
         if(req.query.lang == 'en'){
             var json_string = `State of ${state.State_Name} currently has ${state.Total_Cases}(${state.New_Cases}) confirmed cases, ${state.Total_Deaths}(${state.New_Deaths}) deaths cases and ${state.Total_Recovered} recovered cases.`
@@ -310,31 +301,60 @@ app.get('/global', (req, res) => {
 })
 
 app.get('/coronatry', (req, res) => {
-    if (!req.query.countries || req.query.countries.length !== 2) {
-        res.send('Invalid')
-    }
-    var tukhoa = req.query.countries.toLowerCase()
-    if (country_array[tukhoa]) {
-        var response = JSON.parse(fs.readFileSync('./data/worldometers.json'))
-        var json_data = response.filter(r => r.Country_Name == country_array[tukhoa])
-        var json_data = json_data[0]
-        if (req.query.lang == 'en'){
-            let json_response = {
-                "messages": [
-                    { "text": `${json_data.Country_Name} currently has ${json_data.Total_Cases}(${json_data.New_Cases}) total cases, ${json_data.Serious_Cases} serious case, ${json_data.Total_Deaths}(${json_data.New_Deaths}) death cases and ${json_data.Total_Recovered} recoveries cases.`},
-                ],
-                "redirect_to_blocks": [`ask_${tukhoa}_en`]
+    if (!req.query.countries) {
+        return res.send('Invalid')
+    } else if (req.query.countries.length !== 2){
+        let matches = stringsimilarity.findBestMatch(req.query.countries, countrieslist)
+        if (matches.bestMatch.rating >= 0.5) {
+            var datafile = JSON.parse(fs.readFileSync('./data/worldometers.json'))
+            var json_data = datafile.filter(r => r.Country_Name == matches.bestMatch.target)
+            var json_data = json_data[0]
+            if (req.query.lang == 'en'){
+                let tukhoa = country_array_flipped[matches.bestMatch.target]
+                let json_response = {
+                    "messages": [
+                        { "text": `${json_data.Country_Name} currently has ${json_data.Total_Cases}(${json_data.New_Cases}) total cases, ${json_data.Serious_Cases} serious case, ${json_data.Total_Deaths}(${json_data.New_Deaths}) death cases and ${json_data.Total_Recovered} recoveries cases.`},
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_en`]
+                }
+                res.send(json_response)
+            } else {
+                let tukhoa = country_array_flipped[matches.bestMatch.target]
+                let json_response = {
+                    "messages": [
+                        { "text": `${json_data.Country_Name} hiện tại có ${json_data.Total_Cases}(${json_data.New_Cases}) ca nhiễm, ${json_data.Serious_Cases} ca nghiêm trọng, ${json_data.Total_Deaths}(${json_data.New_Deaths}) ca tử vong và ${json_data.Total_Recovered} ca đã hồi phục.`},
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_en`]
+                }
+                res.send(json_response)
             }
-            res.send(json_response)
         } else {
-            let json_response = {
-                "messages": [
-                    { "text": `${json_data.Country_Name} hiện tại có ${json_data.Total_Cases}(${json_data.New_Cases}) ca nhiễm, ${json_data.Serious_Cases} ca nghiêm trọng, ${json_data.Total_Deaths}(${json_data.New_Deaths}) ca tử vong và ${json_data.Total_Recovered} ca đã hồi phục.`},
-                ],
-                "redirect_to_blocks": [`ask_${tukhoa}_vn`]
-            }
-            res.send(json_response)
+            res.send(JSON.stringify(matches.bestMatch))
         }
+    } else {
+        var tukhoa = req.query.countries.toLowerCase()
+        if (country_array[tukhoa]) {
+            var response = JSON.parse(fs.readFileSync('./data/worldometers.json'))
+            var json_data = response.filter(r => r.Country_Name == country_array[tukhoa])
+            var json_data = json_data[0]
+            if (req.query.lang == 'en'){
+                let json_response = {
+                    "messages": [
+                        { "text": `${json_data.Country_Name} currently has ${json_data.Total_Cases}(${json_data.New_Cases}) total cases, ${json_data.Serious_Cases} serious case, ${json_data.Total_Deaths}(${json_data.New_Deaths}) death cases and ${json_data.Total_Recovered} recoveries cases.`},
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_en`]
+                }
+                res.send(json_response)
+            } else {
+                let json_response = {
+                    "messages": [
+                        { "text": `${json_data.Country_Name} hiện tại có ${json_data.Total_Cases}(${json_data.New_Cases}) ca nhiễm, ${json_data.Serious_Cases} ca nghiêm trọng, ${json_data.Total_Deaths}(${json_data.New_Deaths}) ca tử vong và ${json_data.Total_Recovered} ca đã hồi phục.`},
+                    ],
+                    "redirect_to_blocks": [`ask_${tukhoa}_vn`]
+                }
+                res.send(json_response)
+            }
+    }
     }
 })
 
