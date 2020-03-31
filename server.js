@@ -89,6 +89,7 @@ const search = {
     "others": "Diamond Princess",
     "ph": "Philippines",
     "pk": "Pakistan",
+    "pl": "Poland",
     "pt": "Portugal",
     "qa": "Qatar",
     "ro": "Romania",
@@ -127,51 +128,51 @@ app.get('/', (req, res) => {
 setInterval(async function() { 
     console.time('start')
     //arcgis
-    getJSON(arcgis_url, function(error, response){
+    await getJSON(arcgis_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./arcgis.json', JSON.stringify(response))
         console.log('Đã ghi file arcgis.json')
     })
     //kompa news
-    getJSON(kompa_news_url, function(error, response) {
+    await getJSON(kompa_news_url, function(error, response) {
         if (error) return;
         fs.writeFileSync('./kompa_news.json', JSON.stringify(response))
-        console.log('Đã ghi file arcgis.json')
+        console.log('Đã ghi file kompa_news.json')
     })
     //kompa (vnfull)
-    getJSON(kompa_vnfull, function(error, response){
+    await getJSON(kompa_vnfull, function(error, response){
         if (error) return;
         fs.writeFileSync('./vnfull.json', JSON.stringify(response))
         console.log('Đã ghi file vnfull.json')
     })
     //worldometers
         //global
-    getJSON(worldometers_url, function(error, response){
+    await getJSON(worldometers_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./worldometers.json', JSON.stringify(response))
         console.log('Đã ghi file worldometers.json')
     })
         //total
-    getJSON(worldometers_total_url, function(error, response){
+    await getJSON(worldometers_total_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./total.json', JSON.stringify(response))
         console.log('Đã ghi file total.json')
     })
         //us state
-    getJSON(worldometers_usstate_url, function(error, response){
+    await getJSON(worldometers_usstate_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./us.json', JSON.stringify(response))
         console.log('Đã ghi file us.json')
     })
     //newsbreak
-    getJSON(newsbreak_url, function(error, response){
+    await getJSON(newsbreak_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./usprovince.json', JSON.stringify(response))
         console.log('Đã ghi file usprovince.json')
     })
     console.log('Đã ghi hết tất cả file')
     console.timeEnd('start')
-}, ms('3m'))
+}, ms('5s'))
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
