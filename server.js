@@ -249,7 +249,7 @@ app.get('/ussearch', (req, res) => {
 })
 
 app.get('/vnfull', (req, res) => {
-    let data = JSON.parse(fs.readFileSync('vnfull.json'))
+    let data = JSON.parse(fs.readFileSync('./data/vnfull.json'))
     if (req.query.lang == 'en') {
         var total = ""
         data.provinces.forEach(tentp => {
