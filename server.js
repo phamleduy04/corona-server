@@ -51,8 +51,8 @@ var server = http.createServer(app);
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
-
-setInterval(async function() { 
+getAllData();
+async function getAllData(){
     console.time('start')
     //arcgis
     await getJSON(arcgis_url, function(error, response){
@@ -99,7 +99,8 @@ setInterval(async function() {
     })
     console.log('Đã ghi hết tất cả file')
     console.timeEnd('start')
-}, ms('3m'))
+}
+setInterval(getAllData, ms('3m'))
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
@@ -252,7 +253,7 @@ app.get('/vnfull', (req, res) => {
     if (req.query.lang == 'en') {
         var total = ""
         data.provinces.forEach(tentp => {
-            var line = `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.\n\n`
+            var line = `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.\n`
             total += line
         })
         var response = {
@@ -262,7 +263,7 @@ app.get('/vnfull', (req, res) => {
     } else {
         var total = ""
         data.provinces.forEach(tentp => {
-            var line = `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n\n`
+            var line = `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n`
             total += line
         })
         var response = {
