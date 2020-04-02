@@ -1,6 +1,6 @@
 {
   "name": "corona-server-worldometer",
-  "version": "4.1.3",
+  "version": "4.1.4",
   "description": "Changes API",
   "main": "server.js",
   "scripts": {
