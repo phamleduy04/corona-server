@@ -9,7 +9,7 @@ const ms = require('ms');
 const stringsimilarity = require('string-similarity');
 const fs = require('fs');
 //đọc file
-const usprovincelist = fs.readFileSync('./data/listprovince.txt', 'utf8').split(',');
+const usprovincelist = fs.readFileSync('./data/listprovinceus.txt', 'utf8').split(',');
 const countrieslist = fs.readFileSync('./data/countries.txt', 'utf8').split(',');
 const { news_api_key } = require('./config.json');
 const country_array = require('./data/country_array.json');
@@ -51,7 +51,6 @@ var server = http.createServer(app);
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
-getAllData();
 async function getAllData(){
     console.time('start')
     //arcgis
@@ -71,6 +70,13 @@ async function getAllData(){
         if (error) return;
         fs.writeFileSync('./data/vnfull.json', JSON.stringify(response))
         console.log('Đã ghi file vnfull.json')
+        //write list vn
+        var array = []
+        response.provinces.forEach(e => {
+            array.push(e.Province_Name)
+        });
+        fs.writeFileSync('./data/listprovincevn.txt', array)
+        console.log('Đã ghi file listprovincevn.txt')
     })
     //worldometers
         //global
@@ -248,26 +254,25 @@ app.get('/ussearch', (req, res) => {
     }
 })
 
-app.get('/vnfull', (req, res) => {
+app.get('/vnsearch', (req, res) => {
     let data = JSON.parse(fs.readFileSync('./data/vnfull.json'))
-    if (req.query.lang == 'en') {
-        var total = ""
-        data.provinces.forEach(tentp => {
-            var line = `${tentp.Province_Name} currently has ${tentp.Confirmed} confirmed cases, ${tentp.Deaths} deaths cases and ${tentp.Recovered} recoveries cases.\n`
-            total += line
-        })
-        var response = {
-            "messages": [{ "text": `${total}` }]
+    let listprovince_array = fs.readFileSync('./data/listprovincevn.txt', 'utf8').split(',')
+    let lang = req.query.lang
+    let search_string = req.query.province
+    if (!search_string) return res.send('Invalid')
+    let matches = stringsimilarity.findBestMatch(search_string, listprovince_array)
+    let data_json = data.provinces.filter(m => m.Province_Name == matches.bestMatch.target)
+    data_json = data_json[0]
+    if (lang == 'en') {
+        let response = {
+            "messages": [{ "text": `${data_json.Province_Name} currently has ${data_json.Confirmed} confirmed cases, ${data_json.Deaths} deaths cases and ${data_json.Recovered} recoveries cases.`}],
+            "redirect_to_blocks":["cont_vn_vn"]
         }
         res.send(response)
     } else {
-        var total = ""
-        data.provinces.forEach(tentp => {
-            var line = `${tentp.Province_Name} hiện tại có ${tentp.Confirmed} ca nhiễm, ${tentp.Deaths} ca tử vong và ${tentp.Recovered} ca hồi phục.\n`
-            total += line
-        })
-        var response = {
-            "messages": [{ "text": `${total}` }]
+        let response = {
+            "messages": [{ "text": `${data_json.Province_Name} hiện tại có ${data_json.Confirmed} ca nhiễm, ${data_json.Deaths} ca tử vong và ${data_json.Recovered} ca hồi phục.`}],
+            "redirect_to_blocks":["cont_vn_en"]
         }
         res.send(response)
     }
