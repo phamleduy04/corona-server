@@ -260,6 +260,7 @@ app.get('/vnsearch', (req, res) => {
     let lang = req.query.lang
     let search_string = req.query.province
     if (!search_string) return res.send('Invalid')
+    if (search_string == 'tphcm') search_string = 'Hồ Chí Minh'
     let matches = stringsimilarity.findBestMatch(search_string, listprovince_array)
     let data_json = data.provinces.filter(m => m.Province_Name == matches.bestMatch.target)
     data_json = data_json[0]
