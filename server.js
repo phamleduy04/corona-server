@@ -266,13 +266,13 @@ app.get('/vnsearch', (req, res) => {
     if (lang == 'en') {
         let response = {
             "messages": [{ "text": `${data_json.Province_Name} currently has ${data_json.Confirmed} confirmed cases, ${data_json.Deaths} deaths cases and ${data_json.Recovered} recoveries cases.`}],
-            "redirect_to_blocks":["cont_vn_vn"]
+            "redirect_to_blocks":["cont_vn_en"]
         }
         res.send(response)
     } else {
         let response = {
             "messages": [{ "text": `${data_json.Province_Name} hiện tại có ${data_json.Confirmed} ca nhiễm, ${data_json.Deaths} ca tử vong và ${data_json.Recovered} ca hồi phục.`}],
-            "redirect_to_blocks":["cont_vn_en"]
+            "redirect_to_blocks":["cont_vn_vn"]
         }
         res.send(response)
     }
