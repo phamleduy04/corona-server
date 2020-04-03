@@ -96,6 +96,7 @@ async function getAllData(){
         fs.writeFileSync('./data/usprovince.json', JSON.stringify(response))
     })
     //john hopkins
+    /*
     await getJSON(jhu_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/jhu.json', JSON.stringify(response))
@@ -107,6 +108,7 @@ async function getAllData(){
         let not_dulp_city_array = Array.from(new Set(city_array))
         fs.writeFileSync('./data/listcityus.txt', not_dulp_city_array)
     })
+    */
     console.log('Đã ghi hết tất cả file')
     console.timeEnd('start')
 }
@@ -129,7 +131,7 @@ app.get('/uscitysearch', (req, res) => {
         } else {
         state_json = state_json[0]
         let data_json = JSON.parse(fs.readFileSync('./data/jhu.json')) //read data
-        let filter_json = data_json.filter(e => e.province == state_json.name && e.city == city_name)
+        let filter_json = data_json.filter(e => e.province == state_json.name && e.city == city_name && e.country == 'US')
         filter_json = filter_json[0]
         if (!filter_json) {
             if (lang == 'en'){
