@@ -112,7 +112,6 @@ async function getAllData(){
 }
 setInterval(getAllData, ms('4m'))
 
-
 app.get('/uscitysearch', (req, res) => {
     let query = req.query.query
     let lang = req.query.lang
@@ -141,9 +140,9 @@ app.get('/uscitysearch', (req, res) => {
         } else {
             let stats = filter_json.stats
             if (lang == 'en'){
-                res.send({"messages": [{ "text": `${filter_json.city} city in the state of ${filter_json.province} currently has ${stats.confirmed} confirmed cases, ${stats.deaths} deaths cases and ${stats.recovered} recovered cases. \nUpdated date: ${filter_json.updatedAt}` }]});
+                res.send({"messages": [{ "text": `${filter_json.city} city in the state of ${filter_json.province} currently has ${stats.confirmed} confirmed cases, ${stats.deaths} deaths cases and ${stats.recovered} recovered cases. \nUpdated date: ${filter_json.updatedAt}` }],"redirect_to_blocks":["cont_city_us_en"]});
             } else {
-                res.send({"messages": [{ "text": `Thành phố ${filter_json.city} ở bang ${filter_json.province} hiện tại có ${stats.confirmed} ca nhiễm, ${stats.deaths} ca tử vong và ${stats.recovered} ca hồi phục.\nNgày cập nhật: ${filter_json.updatedAt}`}]});
+                res.send({"messages": [{ "text": `Thành phố ${filter_json.city} ở bang ${filter_json.province} hiện tại có ${stats.confirmed} ca nhiễm, ${stats.deaths} ca tử vong và ${stats.recovered} ca hồi phục.\nNgày cập nhật: ${filter_json.updatedAt}`}],"redirect_to_blocks":["cont_city_us_vn"]});
             }
         }
     }
