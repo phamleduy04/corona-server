@@ -11,29 +11,29 @@ const fs = require("fs");
 //đọc file
 const usprovincelist = fs.readFileSync("./data/listprovinceus.txt", "utf8").split(",");
 const countrieslist = fs.readFileSync("./data/countries.txt", "utf8").split(",");
-const { news_api_key } = require("./config.json");
+const { News_API_Key } = require("./config.json");
 const country_array = require("./data/country_array.json");
 function countryarrayfilp() {
 // dịch ngược file country_array
-    let res = {}
+    let res = {};
     for (var key in country_array){
         res[country_array[key]] = key;
     }
-    fs.writeFileSync("./data/country_array_flipped.json", JSON.stringify(res))
+    fs.writeFileSync("./data/country_array_flipped.json", JSON.stringify(res));
 }
 countryarrayfilp();
 const country_array_flipped = require("./data/country_array_flipped.json")
 
-const newsapi = new NewsAPI(news_api_key);
+const newsapi = new NewsAPI(News_API_Key);
 //url list
-const arcgis_url = "https://viruscoronaapi.herokuapp.com/arcgis"
-const kompa_news_url = "https://viruscoronaapi.herokuapp.com/kompa?data=news"
-const kompa_vnfull = "https://viruscoronaapi.herokuapp.com/kompa"
-const worldometers_url = "https://viruscoronaapi.herokuapp.com/worldometers"
-const worldometers_total_url = "https://viruscoronaapi.herokuapp.com/worldometers?data=total"
-const worldometers_usstate_url = "https://viruscoronaapi.herokuapp.com/worldometers?data=usstate"
-const newsbreak_url = "https://viruscoronaapi.herokuapp.com/breaknews"
-const jhu_url = "https://viruscoronaapi.herokuapp.com/jhudata"
+const Arcgis_URL = "https://viruscoronaapi.herokuapp.com/arcgis";
+const Kompa_News_URL = "https://viruscoronaapi.herokuapp.com/kompa?data=news";
+const Kompa_Vnfull_URL = "https://viruscoronaapi.herokuapp.com/kompa";
+const Worldometers_URL = "https://viruscoronaapi.herokuapp.com/worldometers";
+const Worldometers_Total_URL = "https://viruscoronaapi.herokuapp.com/worldometers?data=total";
+const Worldometers_UsState_URL = "https://viruscoronaapi.herokuapp.com/worldometers?data=usstate";
+const Newsbreak_URL = "https://viruscoronaapi.herokuapp.com/breaknews";
+//const jhu_url = "https://viruscoronaapi.herokuapp.com/jhudata"
 
 
 var app = express();
@@ -54,44 +54,44 @@ app.get("/", (req, res) => {
 async function getAllData(){
     console.time("start")
     //arcgis
-    await getJSON(arcgis_url, function(error, response){
+    await getJSON(Arcgis_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/arcgis.json", JSON.stringify(response))
     })
     //kompa news
-    await getJSON(kompa_news_url, function(error, response) {
+    await getJSON(Kompa_News_URL, function(error, response) {
         if (error) return;
         fs.writeFileSync("./data/kompa_news.json", JSON.stringify(response))
     })
     //kompa (vnfull)
-    await getJSON(kompa_vnfull, function(error, response){
+    await getJSON(Kompa_Vnfull_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/vnfull.json", JSON.stringify(response))
         //write list vn
         var array = []
-        response.provinces.forEach(e => {
-            array.push(e.Province_Name)
+        response.provinces.forEach((e) => {
+            array.push(e.Province_Name);
         });
-        fs.writeFileSync("./data/listprovincevn.txt", array)
+        fs.writeFileSync("./data/listprovincevn.txt", array);
     })
     //worldometers
         //global
-    await getJSON(worldometers_url, function(error, response){
+    await getJSON(Worldometers_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/worldometers.json", JSON.stringify(response))
     })
         //total
-    await getJSON(worldometers_total_url, function(error, response){
+    await getJSON(Worldometers_Total_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/total.json", JSON.stringify(response))
     })
         //us state
-    await getJSON(worldometers_usstate_url, function(error, response){
+    await getJSON(Worldometers_UsState_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/us.json", JSON.stringify(response))
     })
         //newsbreak
-    await getJSON(newsbreak_url, function(error, response){
+    await getJSON(Newsbreak_URL, function(error, response){
         if (error) return;
         fs.writeFileSync("./data/usprovince.json", JSON.stringify(response))
     })
@@ -118,10 +118,10 @@ app.get("/uscitysearch", (req, res) => {
     let query = req.query.query
     let lang = req.query.lang
     if (query.includes(",")){
-        let state_code = query.split(",")[1].toUpperCase().trim()
-        let city_name = capitalize.words(query.split(",")[0])
+        let State_Code = query.split(",")[1].toUpperCase().trim()
+        let City_Name = capitalize.words(query.split(",")[0])
         let usState_json = new UsaStates()
-        let state_json = usState_json.states.filter(e => e.abbreviation == state_code) //filter to get json i want
+        let state_json = usState_json.states.filter(e => e.abbreviation == State_Code) //filter to get json i want
         if (state_json.length == 0){
             if (lang == "en"){
                 res.send({"messages": [{ "text": `You have entered an invalid state code, please enter the 2 letter state code (Eg: TX, WA, ..)` }]});
@@ -131,7 +131,7 @@ app.get("/uscitysearch", (req, res) => {
         } else {
         state_json = state_json[0]
         let data_json = JSON.parse(fs.readFileSync("./data/jhu.json")) //read data
-        let filter_json = data_json.filter(e => e.province == state_json.name && e.city == city_name && e.country == "US")
+        let filter_json = data_json.filter(e => e.province == state_json.name && e.city == City_Name && e.country == "US")
         filter_json = filter_json[0]
         if (!filter_json) {
             if (lang == "en"){
