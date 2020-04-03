@@ -20,7 +20,6 @@ function countryarrayfilp() {
         res[country_array[key]] = key;
     }
     fs.writeFileSync('./data/country_array_flipped.json', JSON.stringify(res))
-    console.log('Đã ghi file country_array_filpped.json')
 }
 countryarrayfilp();
 const country_array_flipped = require('./data/country_array_flipped.json')
@@ -34,6 +33,7 @@ const worldometers_url = 'https://viruscoronaapi.herokuapp.com/worldometers'
 const worldometers_total_url = 'https://viruscoronaapi.herokuapp.com/worldometers?data=total'
 const worldometers_usstate_url = 'https://viruscoronaapi.herokuapp.com/worldometers?data=usstate'
 const newsbreak_url = 'https://viruscoronaapi.herokuapp.com/breaknews'
+const jhu_url = 'https://viruscoronaapi.herokuapp.com/jhudata'
 
 
 var app = express();
@@ -47,66 +47,114 @@ app.use((req, res, next) => {
   });
 
 var server = http.createServer(app);
-
 app.get('/', (req, res) => {
     res.send("Home page. Server running okay.");
 });
+
 async function getAllData(){
     console.time('start')
     //arcgis
     await getJSON(arcgis_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/arcgis.json', JSON.stringify(response))
-        console.log('Đã ghi file arcgis.json')
     })
     //kompa news
     await getJSON(kompa_news_url, function(error, response) {
         if (error) return;
         fs.writeFileSync('./data/kompa_news.json', JSON.stringify(response))
-        console.log('Đã ghi file kompa_news.json')
     })
     //kompa (vnfull)
     await getJSON(kompa_vnfull, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/vnfull.json', JSON.stringify(response))
-        console.log('Đã ghi file vnfull.json')
         //write list vn
         var array = []
         response.provinces.forEach(e => {
             array.push(e.Province_Name)
         });
         fs.writeFileSync('./data/listprovincevn.txt', array)
-        console.log('Đã ghi file listprovincevn.txt')
     })
     //worldometers
         //global
     await getJSON(worldometers_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/worldometers.json', JSON.stringify(response))
-        console.log('Đã ghi file worldometers.json')
     })
         //total
     await getJSON(worldometers_total_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/total.json', JSON.stringify(response))
-        console.log('Đã ghi file total.json')
     })
         //us state
     await getJSON(worldometers_usstate_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/us.json', JSON.stringify(response))
-        console.log('Đã ghi file us.json')
     })
         //newsbreak
     await getJSON(newsbreak_url, function(error, response){
         if (error) return;
         fs.writeFileSync('./data/usprovince.json', JSON.stringify(response))
-        console.log('Đã ghi file usprovince.json')
+    })
+    //john hopkins
+    await getJSON(jhu_url, function(error, response){
+        if (error) return;
+        fs.writeFileSync('./data/jhu.json', JSON.stringify(response))
+        //list of city
+        let city_array = []
+        response.forEach(e => {
+            city_array.push(e.city)
+        })
+        let not_dulp_city_array = Array.from(new Set(city_array))
+        fs.writeFileSync('./data/listcityus.txt', not_dulp_city_array)
     })
     console.log('Đã ghi hết tất cả file')
     console.timeEnd('start')
 }
-setInterval(getAllData, ms('3m'))
+setInterval(getAllData, ms('4m'))
+
+
+app.get('/uscitysearch', (req, res) => {
+    let query = req.query.query
+    let lang = req.query.lang
+    if (query.includes(',')){
+        let state_code = query.split(',')[1].toUpperCase().trim()
+        let city_name = capitalize.words(query.split(',')[0])
+        let usState_json = new UsaStates()
+        let state_json = usState_json.states.filter(e => e.abbreviation == state_code) //filter to get json i want
+        if (state_json.length == 0){
+            if (lang == 'en'){
+                res.send({"messages": [{ "text": `You have entered an invalid state code, please enter the 2 letter state code (Eg: TX, WA, ..)` }]});
+            } else {
+                res.send({"messages": [{ "text": `Bạn đã nhập sai mã bang, vui lòng nhập mã bang với 2 chữ cái (VD: TX, WA, ...)` }]})
+            }
+        } else {
+        state_json = state_json[0]
+        let data_json = JSON.parse(fs.readFileSync('./data/jhu.json')) //read data
+        let filter_json = data_json.filter(e => e.province == state_json.name && e.city == city_name)
+        filter_json = filter_json[0]
+        if (!filter_json) {
+            if (lang == 'en'){
+                res.send({"messages": [{ "text": `I can't find the city in that state, maybe your city currently has no recorded cases.` }]});
+            } else {
+                res.send({"messages": [{ "text": `Mình không tìm được tên thành phố trong bang đó, có thể là thành phố của bạn hiện tại không có dịch.` }]})
+            }
+        } else {
+            let stats = filter_json.stats
+            if (lang == 'en'){
+                res.send({"messages": [{ "text": `${filter_json.city} city in the state of ${filter_json.province} currently has ${stats.confirmed} confirmed cases, ${stats.deaths} deaths cases and ${stats.recovered} recovered cases. \nUpdated date: ${filter_json.updatedAt}` }]});
+            } else {
+                res.send({"messages": [{ "text": `Thành phố ${filter_json.city} ở bang ${filter_json.province} hiện tại có ${stats.confirmed} ca nhiễm, ${stats.deaths} ca tử vong và ${stats.recovered} ca hồi phục.\nNgày cập nhật: ${filter_json.updatedAt}`}]});
+            }
+        }
+    }
+    } else {
+        if (lang == 'en'){
+            res.send({"messages": [{ "text": `Please enter the correct order: <city name>,<state code> (Eg Dallas, TX)`}]});
+        } else {
+            res.send({"messages": [{ "text": `Bạn vui lòng nhập theo đúng trình tự: <tên thành phố>,<mã bang> (VD: Dallas,TX)`}]});
+        }
+    }
+})
 
 app.get('/cansearch', (req, res) => {
     var canada_provinces = ["British Columbia", "Ontario", "Alberta", "Quebec", "New Brunswick", "Saskatchewan", "Manitoba", "Nova Scotia", "Grand Princess", "Newfoundland and Labrador", "Prince Edward Island"]
