@@ -1,1 +1,1 @@
-Thái Nguyên,Trà Vinh,Lào Cai,Hà Nội,Cần Thơ,Bắc Ninh,Đồng Tháp,Vĩnh Phúc,Ninh Thuận,Bình Thuận,Bến Tre,Quảng Nam,Bạc Liêu,Tây Ninh,Hải Dương,Khánh Hoà,Thừa Thiên Huế,Lai Châu,Thanh Hoá,Hà Nam,Quảng Ninh,Hồ Chí Minh,Bắc Giang,Hà Tĩnh,Ninh Bình,Đà Nẵng
+Thái Nguyên,Trà Vinh,Lào Cai,Hà Nội,Cần Thơ,Bắc Ninh,Đồng Tháp,Đồng Nai,Vĩnh Phúc,Ninh Thuận,Bình Thuận,Bến Tre,Quảng Nam,Bạc Liêu,Tây Ninh,Hải Dương,Khánh Hoà,Thừa Thiên Huế,Lai Châu,Thanh Hoá,Hà Nam,Quảng Ninh,Hồ Chí Minh,Bắc Giang,Hà Tĩnh,Ninh Bình,Đà Nẵng

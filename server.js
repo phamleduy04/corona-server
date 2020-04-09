@@ -113,7 +113,7 @@ async function getAllData(){
     console.timeEnd("start")
 }
 setInterval(getAllData, ms("4m"))
-
+getAllData()
 app.get("/uscitysearch", (req, res) => {
     let query = req.query.query
     let lang = req.query.lang
