@@ -87,10 +87,10 @@ app.get("/usprovince", async (req, res) => {
     let json_string = 'null'
     let redirect = 'null'
     if (lang == "en"){
-        json_string = `Province of ${data_sorted.county} currently has ${data_sorted.county} confirmed cases, ${data_sorted.stats.deaths} deaths cases and ${data_sorted.stats.recovered} recovered cases.\n Updated at: ${data_sorted.updatedAt}`
+        json_string = `Province of ${data_sorted.county} currently has ${data_sorted.stats.confirmed.toString().replace(pattern, ",")} confirmed cases, ${data_sorted.stats.deaths.toString().replace(pattern, ",")} deaths cases and ${data_sorted.stats.recovered.toString().replace(pattern, ",")} recovered cases.\n Updated at: ${data_sorted.updatedAt}`
         redirect = "cont_province_us_en"
     } else {
-        json_string = `Quận ${data_sorted.county} hiện tại có ${data_sorted.county} ca nhiễm, ${data_sorted.stats.deaths} ca tử vong và ${data_sorted.stats.recovered} ca hồi phục. \n Ngày cập nhật: ${data_sorted.updatedAt}`
+        json_string = `Quận ${data_sorted.county} hiện tại có ${data_sorted.stats.confirmed.toString().replace(pattern, ",")} ca nhiễm, ${data_sorted.stats.deaths.toString().replace(pattern, ",")} ca tử vong và ${data_sorted.stats.recovered.toString().replace(pattern, ",")} ca hồi phục. \n Ngày cập nhật: ${data_sorted.updatedAt}`
         redirect = "cont_province_us_vn"
     }
     let response_json = {
