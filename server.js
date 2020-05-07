@@ -259,6 +259,7 @@ app.get("/corona", async (req, res) => {
             "redirect_to_blocks": [`ask_${data.countryInfo.iso2.toLowerCase()}_vn`]
         }
     }
+    if (trymode == "true") delete json_response["redirect_to_blocks"]
     res.send(json_response)
 })
 
