@@ -240,7 +240,7 @@ app.get("/global", async (req, res) => {
 
 app.get("/corona", async (req, res) => {
     if (!req.query.countries) return res.send("Invalid")
-    let data = await api.countries({country:req.query.countries, allowNull: true})
+    let data = await api.countries({country:req.query.countries, allowNull: false})
     let trymode = req.query.trymode
     if (data.message) { //{"message": "Country not found or doesn't have any cases"}
         if (trymode == "true") return res.send('Invalid');
