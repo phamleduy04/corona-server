@@ -183,7 +183,7 @@ app.get("/vnsearch", async (req, res) => {
             msg = {"text": 'The city name you were looking for could not be found. Maybe this city has no virus !'}
             redirect = 'cont_vn_en'
         } else {
-            msg = {"text": 'Không tìm thấy tên thành phố bạn tìm. Có thể thành phố này không có virus'}
+            msg = {"text": 'Không tìm thấy tên thành phố bạn tìm. Có thể thành phố này không có ca nhiễm được ghi nhận!'}
             redirect = 'cont_vn_vn'
         }
         return res.json({"messages": [msg], "redirect_to_blocks": [redirect]})
