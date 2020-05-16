@@ -7,14 +7,16 @@ const UsaStates = require("usa-states").UsaStates;
 const usStates = new UsaStates()
 const NewsAPI = require("newsapi");
 const ms = require("ms");
-const {NovelCovid} = require('novelcovid');
-const track = new NovelCovid();
+const api = require('novelcovid');
+api.settings({
+    baseUrl: "https://corona.lmao.ninja"
+})
 const db = require('quick.db');
 const stringsimilarity = require("string-similarity");
-const fs = require("fs");
 const { News_API_Key } = require("./config.json");
 const newsapi = new NewsAPI(News_API_Key);
-const {arcgis, vnfull} = require('./functions.js')
+const {arcgis, vnfull} = require('./functions.js');
+const { default: slugify } = require("slugify");
 setInterval(() => {
     arcgis()
     vnfull()
@@ -31,6 +33,13 @@ app.use((req, res, next) => {
     next();
   });
 
+app.use(express.json())
+
+app.get('/vn', async (req, res) => {
+    console.log(await api.gov('vn'))
+    res.send('done')
+
+})
 var server = http.createServer(app);
 app.get("/", (req, res) => {
     res.send("Home page. Server running okay.");
@@ -79,7 +88,7 @@ app.get("/usprovince", async (req, res) => {
     usState_data = usState_data.filter(e => e.abbreviation == state)
     if (!usState_data) return res.send("Invalid")
     usState_data = usState_data[0]
-    let data = await track.jhucsse(true, province_name);
+    let data = await api.jhucsse(true, province_name);
     if (data.message) return res.send('Invalid') 
     let data_sorted = data.filter(e => e.province == usState_data.name)
     if (!data_sorted) return res.send('Invalid')
@@ -130,7 +139,7 @@ app.get("/aussearch", (req, res) => {
 app.get("/ussearch", async (req, res) => {
     let state_name_req = req.query.state
     if (!state_name_req) return res.send("Invalid")
-    let data = await track.states(state_name_req)
+    let data = await api.states(state_name_req)
     if (!data.message){ //{ message: "Country not found or doesn't have any cases" }
         if(req.query.lang == "en"){
             var json_string = `State of ${data.state.toString().replace(pattern, ',')} currently has ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) confirmed cases, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) deaths cases and N/A recovered cases.`
@@ -159,27 +168,39 @@ app.get("/ussearch", async (req, res) => {
 })
 
 app.get("/vnsearch", async (req, res) => {
-    let data = await db.get('vnfull')
-    let listprovince_array = fs.readFileSync("./data/listprovincevn.txt", "utf8").split(",")
+    let data = await db.get('vndata')
     let lang = req.query.lang
     let search_string = req.query.province
     if (!search_string) return res.send("Invalid")
-    if (search_string.toLowerCase() == "tphcm" || search_string.toLowerCase() == "hcm") search_string = "Hồ Chí Minh"
-    let matches = stringsimilarity.findBestMatch(search_string, listprovince_array)
-    let data_json = data.provinces.filter(m => m.Province_Name == matches.bestMatch.target)
+    search_string = slugify(search_string, {locale: 'vi'})
+    search_string = capitalize.words(search_string)
+    if (search_string == "Tphcm" || search_string == "Hcm") search_string = "Ho-Chi-Minh"
+    let data_json = data.filter(e => e.city == search_string)
+    if (data_json.length === 0) {
+        let msg = undefined;
+        let redirect = undefined;
+        if (lang == 'en'){
+            msg = {"text": 'The city name you were looking for could not be found. Maybe this city has no virus !'}
+            redirect = 'cont_vn_en'
+        } else {
+            msg = {"text": 'Không tìm thấy tên thành phố bạn tìm. Có thể thành phố này không có virus'}
+            redirect = 'cont_vn_vn'
+        }
+        return res.json({"messages": [msg], "redirect_to_blocks": [redirect]})
+    }
     data_json = data_json[0]
     if (lang == "en") {
         let response = {
-            "messages": [{ "text": `${data_json.Province_Name} currently has ${data_json.Confirmed} confirmed cases, ${data_json.Deaths} deaths cases and ${data_json.Recovered} recoveries cases.`}],
+            "messages": [{ "text": `${data_json.city} currently has ${data_json.cases} confirmed cases, ${data_json.beingTreated} being treated cases, ${data_json.deaths} deaths cases and ${data_json.recovered} recoveries cases.`}],
             "redirect_to_blocks":["cont_vn_en"]
         }
-        res.send(response)
+        res.json(response)
     } else {
         let response = {
-            "messages": [{ "text": `${data_json.Province_Name} hiện tại có ${data_json.Confirmed} ca nhiễm, ${data_json.Deaths} ca tử vong và ${data_json.Recovered} ca hồi phục.`}],
+            "messages": [{ "text": `${data_json.city} hiện tại có ${data_json.cases} ca nhiễm, ${data_json.beingTreated} ca đang điều trị, ${data_json.deaths} ca tử vong và ${data_json.recovered} ca hồi phục.`}],
             "redirect_to_blocks":["cont_vn_vn"]
         }
-        res.send(response)
+        res.json(response)
     }
 })
 
@@ -194,7 +215,7 @@ app.get("/countrycode", (req, res) => {
 })
 
 app.get("/global", async (req, res) => {
-    let data = await track.all()
+    let data = await api.all()
     let totalCases = data.cases.toString().replace(pattern, ",")
     let todayCases = data.todayCases.toString().replace(pattern, ",")
     let totalDeaths = data.deaths.toString().replace(pattern, ",")
@@ -219,7 +240,7 @@ app.get("/global", async (req, res) => {
 
 app.get("/corona", async (req, res) => {
     if (!req.query.countries) return res.send("Invalid")
-    let data = await track.countries(req.query.countries)
+    let data = await api.countries(req.query.countries)
     let trymode = req.query.trymode
     if (data.message) { //{"message": "Country not found or doesn't have any cases"}
         if (trymode == "true") return res.send('Invalid');
@@ -281,7 +302,7 @@ app.get("/news", async (req, res) => {
             }]
         }
         if (countries == "vn") {
-            let data = await db.get('vnfull')
+            let data = await db.get('vnnews')
             data.topTrueNews.forEach(n => {
                 if (n.title.length > 0 && n.picture !== null && n.siteName.length > 0 && n.url.length > 0) {
                     push_json.messages[0].attachment.payload.elements.push({
