@@ -33,7 +33,6 @@ module.exports = {
         })
         //database
         let data = await api.gov('vietnam')
-        console.time('1')
         data.forEach(el => {
             el.city = slugify(el.city, {locale: 'vi'})
         });

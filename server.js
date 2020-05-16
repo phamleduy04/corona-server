@@ -9,7 +9,7 @@ const NewsAPI = require("newsapi");
 const ms = require("ms");
 const api = require('novelcovid');
 api.settings({
-    baseUrl: "https://corona.lmao.ninja"
+    baseUrl: "https://disease.sh"
 })
 const db = require('quick.db');
 const stringsimilarity = require("string-similarity");
@@ -240,7 +240,7 @@ app.get("/global", async (req, res) => {
 
 app.get("/corona", async (req, res) => {
     if (!req.query.countries) return res.send("Invalid")
-    let data = await api.countries(req.query.countries)
+    let data = await api.countries({country:req.query.countries, allowNull: true})
     let trymode = req.query.trymode
     if (data.message) { //{"message": "Country not found or doesn't have any cases"}
         if (trymode == "true") return res.send('Invalid');
@@ -268,14 +268,14 @@ app.get("/corona", async (req, res) => {
     if (req.query.lang == 'en'){
         json_response = {
             "messages": [
-                { "text": `${data.country.toString().replace(pattern, ',')} currently has ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) total cases, ${data.critical.toString().replace(pattern, ',')} serious case, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) death cases and ${data.recovered.toString().replace(pattern, ',')} recoveries cases.`},
+                { "text": `${data.country} currently has ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) total cases, ${data.critical.toString().replace(pattern, ',')} serious case, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) death cases and ${data.recovered.toString().replace(pattern, ',')} recoveries cases.`},
             ],
             "redirect_to_blocks": [`ask_${data.countryInfo.iso2.toLowerCase()}_en`]
         }
     } else {
         json_response = {
             "messages": [
-                { "text": `${data.country.toString().replace(pattern, ',')} hiện tại có ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) ca nhiễm, ${data.critical.toString().replace(pattern, ',')} ca nghiêm trọng, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) ca tử vong và ${data.recovered.toString().replace(pattern, ',')} ca đã hồi phục.`},
+                { "text": `${data.country} hiện tại có ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) ca nhiễm, ${data.critical.toString().replace(pattern, ',')} ca nghiêm trọng, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) ca tử vong và ${data.recovered.toString().replace(pattern, ',')} ca đã hồi phục.`},
             ],
             "redirect_to_blocks": [`ask_${data.countryInfo.iso2.toLowerCase()}_vn`]
         }
