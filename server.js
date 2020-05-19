@@ -139,7 +139,7 @@ app.get("/aussearch", (req, res) => {
 app.get("/ussearch", async (req, res) => {
     let state_name_req = req.query.state
     if (!state_name_req) return res.send("Invalid")
-    let data = await api.states(state_name_req)
+    let data = await api.states({state: state_name_req})
     if (!data.message){ //{ message: "Country not found or doesn't have any cases" }
         if(req.query.lang == "en"){
             var json_string = `State of ${data.state.toString().replace(pattern, ',')} currently has ${data.cases.toString().replace(pattern, ',')}(+${data.todayCases.toString().replace(pattern, ',')}) confirmed cases, ${data.deaths.toString().replace(pattern, ',')}(+${data.todayDeaths.toString().replace(pattern, ',')}) deaths cases and N/A recovered cases.`
