@@ -1,2 +1,0 @@
-# corona-server
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5ce97a8dda51463dafdc60ef5e693b5a)](https://app.codacy.com/manual/phamleduy04/corona-server?utm_source=github.com&utm_medium=referral&utm_content=phamleduy04/corona-server&utm_campaign=Badge_Grade_Dashboard)
