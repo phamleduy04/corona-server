@@ -1,0 +1,71 @@
+{
+    "_isHandled": null,
+    "_isSessionWritten": false,
+    "_client": {
+        "_accessToken": "EAADkT7q22dcBAGMZBSgqQsXBY7zKZA5W2ts2yfkssEr37YQZCZCY1Cvxkhi7Dq4wnESU0QOS6pFwPluNcdwAcdn6ClSZCYVrDNJ7gnlEN4FfUCZCsLmZCmfissMoZAAohyQMLzu4B4EHj6EeWh3fnpQqLemTa2RPVFj4tDJXomuQO0qcXkhkHfId9asKyCM6BJgZD",
+        "_appSecret": "c20e99989a076c3047cc96515b8e99f0",
+        "_version": "6.0"
+    },
+    "_event": {
+        "_rawEvent": {
+            "sender": {
+                "id": "2559753597486406"
+            },
+            "recipient": {
+                "id": "100837348203060"
+            },
+            "timestamp": 1590858250822,
+            "message": {
+                "mid": "m_jBv2gXJ_GmnZ0O8_sOU01VRvs6PcU7QA2yY4Hg4jcEAyh1S3R-DjKnl4K_ttgT_BlNTtjpt7x9KVOAagwkOwAg",
+                "text": "hi"
+            }
+        },
+        "_isStandby": false,
+        "_pageId": "100837348203060"
+    },
+    "_session": {
+        "id": "messenger:2559753597486406",
+        "platform": "messenger",
+        "page": {
+            "id": "100837348203060",
+            "_updatedAt": "2020-05-30T17:04:11.987Z"
+        },
+        "user": {
+            "_updatedAt": "2020-05-30T17:04:11.987Z",
+            "id": "2559753597486406"
+        },
+        "_state": {}
+    },
+    "_initialState": {},
+    "_requestContext": {
+        "method": "POST",
+        "path": "/webhooks/messenger",
+        "query": {},
+        "headers": {
+            "host": "6b8dccdfeaf8.ngrok.io",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip",
+            "user-agent": "facebookexternalua",
+            "content-type": "application/json",
+            "x-hub-signature": "sha1=22928c7adf169c837c083d4f7c533fb2a88f70a0",
+            "facebook-api-version": "v6.0",
+            "content-length": "308",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "2a03:2880:ff:6f::face:b00c"
+        }
+    },
+    "_emitter": {
+        "_events": {},
+        "_eventsCount": 1
+    },
+    "_intent": null,
+    "response": {
+        "status": 200,
+        "headers": {},
+        "body": null
+    },
+    "_personaId": null,
+    "_customAccessToken": null,
+    "_batchQueue": null,
+    "_appId": "251031086094807"
+}
